@@ -12,7 +12,7 @@ This repo contains a template that I use when creating new "books" using [mdbook
 
 If you're looking at the generated HTML version of this file, you will notice horizontal lines of different thickness above some of the section headers. The three section headers above this paragraph will have the three "sizes" of lines.
 
-Note that if you're looking at the Markdown files directly (or in the GitHub web interface), you won't see the horizontal lines, because GitHub doesn't have any way to specify additional CSS stylesheets when viewing Markdown files.
+Note that if you're looking at the Markdown files in the GitHub web interface, you'll see *different* horizontal lines (i.e. only for `H1` and `H2`, with lines the same thickness, and with the lines *below* the section header). This is because GitHub uses their own stylesheet, and doesn't offer a way to override it.
 
 ### Why?
 
@@ -221,10 +221,6 @@ As mentioned above, you can also use this repo as the starting point for a new b
     $ git clone https://github.com/kg4zow/mdbook-template newbook
     ```
 
-    > &#x26A0;&#xFE0F; **This URL may not be valid.**
-    >
-    > I haven't created this repo yet.
-
 * Remove the `.git/` directory, which contains the commit history from my repo, and start a brand new git repository for *your* book. (This isn't *required*, I just figure you're not going to want *my* repo's commit history mixed in with yours.)
 
     ```
@@ -272,9 +268,16 @@ $ bbedit .
 $ make serve
 ```
 
-I normally use either [BBEdit](https://www.barebones.com/products/bbedit/index.html) or [Sublime Text](https://www.sublimetext.com/) to work on Markdown files, with a slight preference for BBEdit because, while I can use "`subl .`" to open the directory, you don't actually *see* the list of files unless you know to hit &#x2318;K then &#x2318;B to make the list appear.
+I normally use either [BBEdit](https://www.barebones.com/products/bbedit/index.html) or [Sublime Text](https://www.sublimetext.com/) to work on Markdown files, with a slight preference for BBEdit because, while I can use "`subl .`" to open the directory, you don't actually *see* the list of files unless you know to hit &#x2318;K followed by &#x2318;B to make the list appear. If you don't, it just looks like an empty window, waiting for you to create a new file.
 
-The "`make serve`" command runs "`mdbook serve --open --hostname 127.0.0.1`". This generates the HTML files for your book, then opens a browser window pointing to the results. When you save changes to a markdown file, the `SUMMARY.md` file, or the `book.toml` file, it will automatically generate new HTML files, and the browser window  that it opened will refresh itself automatically.
+The "`make serve`" command runs "`mdbook serve --open --hostname 127.0.0.1`". This does a few things:
+
+* Generates the HTML files for your book.
+* Starts up a web server, listening on `127.0.0.1:3000`.
+* Opens a browser window pointing to `127.0.0.0:3000`.
+* Watches the files in the book's directory. If it detects any changes to a file containing (or controlling) the book's content, it re-generates the HTML and signals the browser window to refresh itself.
+
+This lets you see a "live preview" of what the finished product is going to look like, while you're working on the content.
 
 When you're finished working on the book for now, hit CONTROL-C to exit from "`mdbook serve`", and then commit your changes.
 
