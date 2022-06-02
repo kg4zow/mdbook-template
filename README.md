@@ -63,23 +63,21 @@ $ git commit
 $ git tag initial
 ```
 
-### If you plan on publishing the book to GitHub Pages
+### GitHub Pages
 
-* &#x26A0;&#xFE0F; Make sure you have `git` version 2.0.7 or later.
-
-* This will create a `gh-pages` branch with a *totally separate commit history* from the `main` branch.
+**IF** you plan to publish your book using GitHub Pages, run the `setup-gh-pages` script. This will create a `gh-pages` branch with a *totally separate commit history* from the `main` branch.
 
 ```
-$ WORK="$( mktemp -d )"
-$ git worktree add --detach "$WORK"
-$ pushd "$WORK"
-$ git checkout --orphan gh-pages
-$ git rm -rf *
-$ touch .nojekyll index.html
-$ git add .
-$ git commit -m 'Started gh-pages branch'
-$ popd
-$ git worktree remove "$WORK"
+$ bash setup-gh-pages
+```
+
+> &#x26A0;&#xFE0F; The script requires `git` version 2.0.7 or later.
+
+Once you've done this, or decided that you don't need to do it, you can remove the script from your repo.
+
+```
+$ git rm setup-gh-pages
+$ git commit -m 'Removed setup-gh-pages script'
 ```
 
 ### Create a GitHub repo and push the new repo to it.

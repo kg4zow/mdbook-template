@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# setup-gh-pages
+# John Simpson <jms1@jms1.net> 2022-06-02
+#
+# Add a 'gh-pages' branch to the repo
+
+set -e
+
+########################################
+# Make sure we don't already have a 'gh-pages' branch
+
+if [[ -n "$( git branch -a | grep gh-pages )" ]]
+then
+    echo "ERROR: this repo already appears to have a 'gh-pages' branch"
+    exit 1
+fi
+
+########################################
+# Create a work directory
+
+WORK="$( mktemp -d )"
+
+########################################
+# Add a new working directory for the repo
+
+git worktree add --detach "$WORK"
+
+########################################
+# In the new working directory, start a new 'gh-pages' branch.
+
+pushd "$WORK"
+git checkout --orphan gh-pages
+git rm -rf *
+touch .nojekyll
+
+########################################
+# Create the initial index.html so the new GitHub Pages site doesn't start off
+# with just an empty page.
+
+cat > index.html <<EOF
+<html>
+<head>
+<title>Coming soon...</title>
+</head>
+<body>
+<h1>Coming soon...</h1>
+<p>This is a placeholder page, so you can tell that GitHub Pages is working.
+This will be replaced with the actual book once you run "<tt>make push</tt>"
+for the first time.</p>
+</body>
+</html>
+EOF
+
+########################################
+# Commit the new files.
+
+git add .
+git commit -m 'Started gh-pages branch'
+git tag -m 'Initial commit on gh-pages branch' gh-pages-initial
+
+
+########################################
+# Done, remove the temp directory.
+
+popd
+git worktree remove "$WORK"
