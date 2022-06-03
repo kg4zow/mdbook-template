@@ -104,18 +104,20 @@
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
                 {{#toc}}{{/toc}}
-    <!-- The @VERSION_COMMIT_XXX@ tags below will be replaced with specific values
-         by the 'version-commit' script, every time 'mdbook' rebuilds the HTML. -->
-                    <hr/><div class="part-title">Version</div>
-                    <div id="commit" class='version-commit-div'>
-                        <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
-                        <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
-                    </div>
-                    <div class="part-title">Generated</div>
-                    <div id="generated" class='version-commit-div'>
-                        <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
-                    </div>
-    <!-- End of @VERSION_COMMIT_XXX@ stuff -->
+
+<!-- Start version-commit content below ToC -->
+                <hr/>
+                <div class="part-title">Version</div>
+                <div id="commit" class='version-commit-div'>
+                    <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+                    <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+                </div>
+                <div class="part-title">Generated</div>
+                <div id="generated" class='version-commit-div'>
+                    <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
+                </div>
+<!-- End version-commit content below ToC -->
+
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -194,6 +196,21 @@
                 <div id="content" class="content">
                     <main>
                         {{{ content }}}
+
+<!-- Start version-commit content below every page -->
+<!--
+                        <hr/>
+                        <div class="version-commit-div" style="float: right">
+                            Generated
+                            <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
+                        </div>
+                        <div class="version-commit-div">
+                            <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span>
+                            <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+                        </div>
+-->
+<!-- End version-commit content below every page -->
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

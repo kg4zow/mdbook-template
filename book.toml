@@ -1,4 +1,6 @@
-# Documentation: https://rust-lang.github.io/mdBook/
+# Documentation
+# * mdbook   https://rust-lang.github.io/mdBook/
+# * template https://github.com/kg4zow/mdbook-template/
 
 [book]
 authors             = ["John Simpson"]
