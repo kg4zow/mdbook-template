@@ -82,12 +82,12 @@
          by the 'version-commit' script, every time 'mdbook' rebuilds the HTML. -->
                     <hr/><div class="part-title">Version</div>
                     <div id="commit" class='version-commit-div'>
-                        <span class='version-commit-hash'><tt>initial-7-g5519f2b</tt></span><br/>
-                        <span class='version-commit-time'><tt>2022-06-02 16:53:45 +0000</tt></span>
+                        <span class='version-commit-hash'><tt>initial-8-g5223882</tt></span><br/>
+                        <span class='version-commit-time'><tt>2022-06-03 20:36:11 +0000</tt></span>
                     </div>
                     <div class="part-title">Generated</div>
                     <div id="generated" class='version-commit-div'>
-                        <span class='version-commit-now'><tt>2022-06-02 16:54:25 +0000</tt></span>
+                        <span class='version-commit-now'><tt>2022-06-03 20:36:59 +0000</tt></span>
                     </div>
     <!-- End of @VERSION_COMMIT_XXX@ stuff -->
             </div>
@@ -155,15 +155,16 @@
 <p>This is a newly created &quot;book&quot; using <a href="https://rust-lang.github.io/mdBook/">mdbook</a>, with the customizations I normally use:</p>
 <ul>
 <li>
-<p>Horizontal bars <em>above</em> <code>H1</code>, <code>H2</code>, and <code>H3</code> headers. (I think having bars above the section headers makes more sense than below the headers.)</p>
+<p>Horizontal bars of varying thickness above <code>H1</code>, <code>H2</code>, and <code>H3</code> headers. I find this makes it easier to quickly spot the beginnings of the sections when the lines are used as separators between the sections. I also think it makes more sense to have the bars <em>above</em> the section headers instead of below them.</p>
 </li>
 <li>
-<p>Automatic version block at the bottom of the navigation bar on the left.</p>
+<p>Automatic git commit and version information at the bottom of the navigation panel on the left.</p>
 </li>
 <li>
-<p>A <code>Makefile</code> with rules to publish the HTML and other files that make up the book, either to a web server or to GitHub Pages. You will almost certainly need to edit this file.</p>
+<p>A <code>Makefile</code> with rules to publish the HTML and other files that make up the book, either to a web server or to GitHub Pages.</p>
 </li>
 </ul>
+<p><a href="https://github.com/kg4zow/mdbook-template/"><code>https://github.com/kg4zow/mdbook-template/</code></a> contains more detail about how to use this repo.</p>
 
                     </main>
 
