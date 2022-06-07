@@ -45,7 +45,7 @@ gh-pages: build
 	rm -rf "$$WORK"/* ; \
 	rsync -av book/ "$$WORK"/ ; \
 	pushd "$$WORK" ; \
-	git add . ; \
+	git add -A ; \
 	git commit -m "Updated gh-pages $$VER" ; \
 	popd ; \
 	git worktree remove "$$WORK" ; \
