@@ -18,7 +18,7 @@ This repo contains a template that I use when creating new "books" using [mdbook
 
 # TL;DR
 
-### Start a new book using this repo as a template
+## Start a new book using this repo as a template
 
 Clone the template repo.
 
@@ -104,7 +104,7 @@ $ git push --tags
 
 If you're publishing to GitHub Pages, be aware that it might take a minute or two before the page is published.
 
-### Work on the book's content
+## Work on the book's content
 
 In window 1 ...
 
@@ -144,21 +144,21 @@ This section will explain the customizations I'm making to how `mdbook` formats 
 
 ### What are "Section Lines"?
 
-If you're looking at the generated HTML version of this file, you will notice horizontal lines of different thickness above some of the section headers. The three section headers above this paragraph will have the three "sizes" of lines.
+If you're looking at the [generated HTML from this template repo](https://kg4zow.github.io/mdbook-template/), you will notice horizontal lines of different thickness above some of the section headers. The three example section headers will have the three "sizes" of lines.
 
-&#x26A0;&#xFE0F; Note that these lines will only show up in the HTML that `mdbook` generates. If you're looking at a Markdown file using the GitHub web interface, you'll see GitHub's "Section Lines", which are different (i.e. only for `H1` and `H2`, with `H1`/`H2` lines being the same thickness, and with the lines *below* the section header text). GitHub does not allow any kind of custom stylesheets within their web pages, for security reasons.
+&#x26A0;&#xFE0F; Note that these lines will only show up in the HTML that `mdbook` generates. If you're looking at this file in the GitHub web interface, you'll see GitHub's "Section Lines", which are different (i.e. only for `H1` and `H2`, with `H1`/`H2` lines being the same thickness, and with the lines *below* the section header text). GitHub does not allow any kind of custom stylesheets within their web pages, for security reasons.
 
-### Why?
+### Why do I want this?
 
-I do this because it makes it easier for me to tell where each logical section of the document starts, and I think it makes more sense to have the lines *above* the section header text rather than *below* it.
+I do this because when I'm skimming through a long document, having the lines *above* the section header text makes it easier for me to see where each section starts. Also, having lines of different thickness makes it easier to see where each major and minor section starts.
 
-### How?
+### How does this work?
 
 This is done using two files:
 
 * **`section-lines.css`** - contains the CSS declarations which add the lines to the HTML.
 
-    The CSS customizes the appearance of HTML `H1`, `H2`, and `H3` elements, *other than* the first `H1` on the page. (I don't add the heavy bar to the first `H1` because I use the same CSS when generating PDF files, I normally use an `H1` header for the document title, and there was no need for that extra heavy bar across the top of the first page.)
+    The CSS customizes the appearance of HTML `H1`, `H2`, and `H3` elements, *other than* the first `H1` on the page. I don't add the heavy bar above the first `H1` because I use the same CSS when generating PDF files, I normally use an `H1` header for the document title, and I didn't want to see that extra heavy bar across the top of the first page.
 
 * **`book.toml`** - tells `mdbook` how to generate the book. The following line tells `mdbook`, when it generates HTML output, to include the following CSS files in addition to the ones included in the theme.
 
@@ -171,29 +171,48 @@ This is done using two files:
 
 ## Automatic Git Commit Information
 
-If you're looking at the generated HTML from this repo, you will notice at the bottom of the navigation bar on the left, a block containing a "Version". This information is the git commit from which the HTML was generated. This is not something that `mdbook` does on its own, I had to figure out how to make it happen.
+If you're looking at the [generated HTML from this template repo](https://kg4zow.github.io/mdbook-template/), you will see a block at the bottom of the navigation bar on the left, containing some information.
 
-**I am not the first person to figure out how to do this.** There are several other web pages out there explaining how to do more or less the same thing, and I *did* read through a few of them to get ideas. The pages I found all seemed to want to add the version information at the bottom of each page, but I wanted the information to be at the bottom of the navigation bar, so I ended up having to do a lot of trial and error and figure out parts of it myself.
+* The "Version" section contains information about the git commit from which the HTML was generated. This will include:
 
-I'm a firm believer in giving credit where credit is due, however while I was figuring this out, I didn't think I would end up writing my own documentation about it, so I didn't keep a list of the pages I was looking at - or if I did, they're in a file on a different computer. If I happen to find those links in the future, I will update this document to give credit where credit is due.
+    * The most recent tag, if any. (This is part of why I always tag the first commit in a repo, especially an mdbook book.)
+    * How many commits *after* that tag it is.
+    * The commit hash itself (after the "`g`").
+    * *Maybe* a "`-dirty`" indicator, which means that there were changes which hadn't been committed yet.
 
-The way I'm doing it involves the following files, in this repo.
+    Below this will be the timestamp of that commit.
+
+* The "Generated" section contains the timestamp when the HTML files were generated.
+
+This is not something that `mdbook` does on its own, I had to figure out how to make it happen.
+
+**I am not the first person to figure out how to do this**, or even to ask about it. I was able to get this working based on information from the links in [this GitHub issue](https://github.com/rust-lang/mdBook/issues/494). My contributions, if any, are ...
+
+* Bundling those commands into a `Makefile`, in a template repo that others are free to use.
+
+* Figuring out how and where to edit the `theme/index-template.hbs` file to put the version info at the bottom of the navigation bar.
+
+* Writing the `version-commit` filter script, in such a way that the `"""sh -c 'jq ".[1]"; sed ...'"""` thing that I've seen in a few different places, isn't needed. (This particular command can be difficult for people to understand, especially if they're not used to working with scripting languages.)
+
+* Writing the documentation you're reading right now.
+
+The way this repo does it it involves the following files:
 
 ### `version-commit`
 
 This is a script which does two things:
 
-1. Reads a stream of data provided by `mdbook`, and prints part of it out.
+1. **Reads a stream of data provided by `mdbook`, and prints part of it out.**
 
     When `mdbook` runs a filter, it sends that script a JSON list with two elements. The first element will contain information about the overall "book", and the second element will contain information about the "chapters", or pages, which make up the book. This includes the contents of the input Markdown files.
 
-    Filtering scripts are expected to output a *possibly modified* copy of *just the second element* from the JSON structure. If the script happens to modify the JSON, it changes the "input" that `mdbook` processes, and thereby modifies the generated HTML pages.
+    Filtering scripts are expected to output a *possibly modified* copy of *just the second element* from the JSON structure. If the script happens to modify the JSON, it will change the "input" that `mdbook` processes, and thereby modify the generated HTML pages.
 
-    In our case, we aren't modifying anything about the Markdown input itself. We're only writing a "filter" because it's the only "hook" that `mdbook` provides to run user-supplied scripts before building the HTML pages.
+    In our case, we aren't modifying anything about the Markdown input itself. We're only writing a "filter" script because it's the only "hook" that `mdbook` provides to run user-supplied scripts before building the HTML pages.
 
     Because we aren't modifying the input, the script just prints the second element as-is.
 
-2. Reads the "`theme/index-template.hbs`" file, substitutes a few values related to the state of the git working directory, and writes a new "`theme/index.hbs`" file.
+2. **Reads the "`theme/index-template.hbs`" file, substitutes a few values related to the state of the git working directory, and writes a new "`theme/index.hbs`" file.**
 
     Specifically, the script substitutes values for the following tags:
 
@@ -205,6 +224,8 @@ This is a script which does two things:
 
     All other content from the "`the/index-template.hbs`" file is copied as-is to the "`theme/index.hbs`" file.
 
+The "`theme/index.hbs`" file written by this script, is used as the template for every HTML page that `mdbook` generates.
+
 ### `version-commit.css`
 
 Contains CSS to control the formatting of the items being added to the template.
@@ -215,45 +236,46 @@ In my case I wanted the text to be a bit smaller than the normal text in the Tab
 
 This is a *copy* of the `index.hbs` file from the default theme built into `mdbook`, with the appropriate lines added to make the version information appear where and how I wanted it.
 
-To get this file, use your copy of `mdbook` to create a dummy book with the full set of theme files, and copy the `theme/index.hbs` file from there. You can also get the original `index.hbs` file from [the `mdbook` source code](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs). Wherever you get it, be sure to use the file matching the version of `mdbook` that you're running.
+#### Copy the original file
 
-* In your new book, create a "`theme/`" directory.
+There are two ways to get the original file:
 
-    ```
-    $ cd ~/git/newbook/
-    $ mkdir theme
-    ```
+* Download it from [the `mdbook` source code](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs). Before you download the file, sure to select the same tag as the version of `mdbook` you're running.
 
-* Create a dummy book with the theme files, by running "`mdbook init --theme`" in an empty directory.
+* Create a dummy book with the full theme files, and copy `theme.index.hbs` from there.
 
-    ```
-    $ mkdir ~/work/xyz
-    $ cd ~/work/xyz
-    $ mdbook init --theme --ignore none -title x
-    ```
+    * In your new book, create a "`theme/`" directory. (You'll be copying a file into this directory in a bit.)
 
-* Copy `theme/index.hbs` from this dummy book, to somewhere outside the directory. Give your copy the name "`index-template.hbs`".
+        ```
+        $ cd ~/git/newbook/
+        $ mkdir theme
+        ```
 
-    ```
-    $ cd ~/work/xyz/
-    $ cp theme/index.hbs ~/git/newbook/theme/index-template.hbs
-    ```
+    * Create a dummy book with the theme files.
 
-* You can delete the dummy book now if you like.
+        ```
+        $ mdbook init --theme --ignore none --title x ~/dummybook
+        ```
 
-    ```
-    $ cd
-    $ rm -rf ~/work/xyz/
-    ```
+    * Copy `theme/index.hbs` from the dummy book, into the `theme/` directory you just created. Give your copy the name "`index-template.hbs`".
 
-Edit your copy of the file.
+        ```
+        $ cp ~/dummybook/theme/index.hbs theme/index-template.hbs
+        ```
+
+    * You can delete the dummy book now if you like.
+
+        ```
+        $ rm -rf ~/dummybook/
+        ```
+
+#### Edit your copy
 
 ```
-$ cd ~/work/xyz/
 $ nano theme/index-template.hbs
 ```
 
-There are two places where you could make changes, depending on where you want the version info to appear within the pages.
+There are two places where you *could* make changes, depending on where you want the version info to appear within the pages.
 
 * **You can add the version info at the bottom of the navigation bar on the left.** The info will be present when somebody is reading the book with a web browser, but will not be present if they print the document.
 
@@ -268,7 +290,7 @@ There are two places where you could make changes, depending on where you want t
             </nav>
     ```
 
-    Just after the line with the `{{/toc}}` tag, add the new lines shown below.
+    Between the `{{/toc}}` and `</div>` tags, add the new lines shown below.
 
     ```html
             <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -293,9 +315,9 @@ There are two places where you could make changes, depending on where you want t
             </nav>
     ```
 
-* **You can add the version info at the bottom of every page.** If you do this, the info will be present when somebody is reading the book with a web browser, AND will be present if they print the document.
+* **You can add the version info at the bottom of every page.** If you do this, the info will be present when somebody is reading the book with a web browser, AND will be present if they print the document. (I'm leaving this active for the template repo itself so people can see what it looks like, but I normally comment this out or remove it from my own books.)
 
-    To do this, search for `"content"` (with the quotes). You should find this:
+    To do this, search for "`{{{ content }}}`". You should find this:
 
     ```
                     <div id="content" class="content">
@@ -304,7 +326,7 @@ There are two places where you could make changes, depending on where you want t
                         </main>
     ```
 
-    Just after the `{{{ content }}}` tag, add the new lines shown below.
+    Between the `{{{ content }}}` and `</main>` tags, add the new lines shown below.
 
     ```
                     <div id="content" class="content">
@@ -326,6 +348,8 @@ There are two places where you could make changes, depending on where you want t
                         </main>
     ```
 
+Both of these changes are present in the `src/index-template.hbs` file in the template repo, so that people who see [the preview online](https://kg4zow.github.io/mdbook-template/) can see what they look like. If you don't want both of them, you may want to commment out or remove one of them.
+
 ### `book.toml`
 
 The `[preprocessor.version-commit]` section in the `book.toml` file tells `mdbook` to run the `version-commit` script before generating the HTML output.
@@ -338,11 +362,9 @@ command         = "./version-commit"
 
 * If you want to change how or where the git commit information appears within the pages, edit `theme/index-template.hbs`. (See above for examples.)
 
-* If you want to change how the "version" or the timestamps are presented (i.e. to use a different `git` command to get the commit info, or to format the timestamps differently), edit the `version-commit` script.
+* If you want to change how the "version" or the timestamps are presented (i.e. to use a different "`git describe`" command to get the commit info, or to format the timestamps differently), edit the `version-commit` script. The script is written in Perl, however it's very *simple* Perl, and if you're familiar with other scripting languages (i.e. shell, Python, Ruby, etc.) you should be able to understand it, even if you aren't familiar with Perl itself.
 
-    It's written in Perl, however it's very *simple* Perl, and if you're familiar with other scripting languages (i.e. shell, Python, Ruby, etc.) you should be able to understand it, even if you aren't familiar with Perl itself.
-
-This file also contains a declaration which makes the `version-commit.css` file be included as part of the HTML files.
+This file also contains a declaration which makes `mdbook` include the `version-commit.css` file as part of the HTML files.
 
 ```toml
 [output.html]
@@ -361,7 +383,7 @@ This is a *quick* list of what's required, I'm not going to go into a lot of det
 
 Obviously.
 
-* **macOS**: (using Homebrew) run "`brew install mdbook`".
+* **macOS** using Homebrew: run "`brew install mdbook`".
 
 * **Others**: [This page](https://rust-lang.github.io/mdBook/guide/installation.html) explains how to install `mdbook`.
 
@@ -371,7 +393,13 @@ Also obviously.
 
 * **macOS**: The `git` program is included as part of the XCode Command Line Tools. macOS comes with a `git` "stub" that will walk you though installing the XCode Command Line Tools if they aren't already installed.
 
-    You can also install `git` using Homebrew if you like, however you may need to check your `PATH` to be sure that Homebrew's binaries are seen *before* the `/usr/bin/` directory.
+    You can also install `git` using Homebrew if you like, however you will need to check your `PATH` to be sure that Homebrew's binaries are seen *before* the `/usr/bin/` directory.
+
+* **CentOS 7**: run "`yum install git`" as root.
+
+* **Debian 10 and 11**: run "`apt install git`" as root.
+
+* **Arch Linux**: run "`pacman -S git`" as root.
 
 * **Others**: See the [Installing Git page](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) in the official `git` documentation.
 
@@ -387,7 +415,11 @@ The Perl JSON module contains code for Perl scripts to work with JSON files. Som
 
 * **CentOS 7**: run "`yum install perl perl-JSON`" as root.
 
-* **Debian 10 and 11**: Perl is installed by the OS, run "`apt install libjson-perl`" as root to install the JSON module.
+* **Debian 10 and 11**:
+
+    * Perl itself is installed by the OS.
+
+    * Run "`apt install libjson-perl`" as root to install the JSON module.
 
 * **Arch Linux**: run "`pacman -S perl perl-json`" as root.
 
@@ -395,11 +427,13 @@ The Perl JSON module contains code for Perl scripts to work with JSON files. Som
 
 The "**TL;DR**" section at the top of this document walks through how to start a new book from this repo.
 
-It's easier to direct you there, than it is to try and maintain two sets of directions for the same thing.
+It's easier to direct you there, than it is to try and maintain two sets of directions for the same process.
 
 # Working on your book
 
 My normal workflow looks like this:
+
+#### Start work
 
 ```
 $ cd ~/git/newbook/
@@ -424,6 +458,8 @@ The "`make serve`" command runs "`mdbook serve --open --hostname 127.0.0.1`". Th
 
 This lets you see a preview of what the finished product is going to look like, every time you save your changes.
 
+#### Finished (for now)
+
 When you're finished working on the book for now, hit CONTROL-C to exit from "`mdbook serve`", and then commit your changes.
 
 ```
@@ -431,7 +467,7 @@ $ git add .
 $ git commit
 ```
 
-If the book's repo is stored on a remote service (like GitHub), push the changes.
+If the book's git repo is stored on a remote service (like GitHub), push the changes.
 
 ```
 $ git push
@@ -449,7 +485,7 @@ Most of the content in this repo, including the `version-commit` script and the 
 
 The `/theme/index-template.hbs` file in this repo was copied from `/src/theme/index.hbs` in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs) and then modified. As such, that file is technically covered by the Mozilla Public License 2.0, [as noted in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
 
-Other files in this repo were *generated* using mdbook, and possibly modified after that. I'll be honest, I'm not sure if this means they're covered under the MPL license or the MIT license, but either way, I have no intention of going after anybody who wants to copy and use them, and I *seriously* doubt that the mdbook developers will either.
+The files under `/src/` were originally *generated* using mdbook, and in the case of `/src/introduction.md`, modified after that. I'll be honest, I'm not sure if this means they're covered under my MIT license or mdbook's MPL license, but either way, I have no intention of going after anybody who wants to copy and use them, and I *seriously* doubt that the mdbook developers will either.
 
 Enjoy.
 
