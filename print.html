@@ -78,18 +78,26 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
+
+<!-- Start extra link above the ToC -->
+<!--
+                &#x2192; <a class='part-title' href='https://github.com/'>GitHub</a>
+                <hr/>
+-->
+<!-- End extra link above the ToC -->
+
                 <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="chapter_1.html">Chapter 1</a></li></ol>
 
 <!-- Start version-commit content below ToC -->
                 <hr/>
                 <div class="part-title">Version</div>
                 <div id="commit" class='version-commit-div'>
-                    <span class='version-commit-hash'><tt>initial-12-g468ae4d</tt></span><br/>
-                    <span class='version-commit-time'><tt>2022-06-07 23:37:25 +0000</tt></span>
+                    <span class='version-commit-hash'><tt>initial-13-g0543c3b</tt></span><br/>
+                    <span class='version-commit-time'><tt>2022-06-08 03:51:38 +0000</tt></span>
                 </div>
                 <div class="part-title">Generated</div>
                 <div id="generated" class='version-commit-div'>
-                    <span class='version-commit-now'><tt>2022-06-07 23:37:55 +0000</tt></span>
+                    <span class='version-commit-now'><tt>2022-06-08 03:52:46 +0000</tt></span>
                 </div>
 <!-- End version-commit content below ToC -->
 
@@ -158,17 +166,19 @@
 <p>This is a newly created &quot;book&quot; using <a href="https://rust-lang.github.io/mdBook/">mdbook</a>, with the customizations I normally use:</p>
 <ul>
 <li>
-<p>Horizontal bars of varying thickness above <code>H1</code>, <code>H2</code>, and <code>H3</code> headers. (Example below.)</p>
+<p>Horizontal bars of varying thickness above <code>H1</code>, <code>H2</code>, and <code>H3</code> headers. (See below for examples of what they look like.)</p>
 <p>I find this makes it easier to quickly spot the beginnings of the sections when the lines are used as separators between the sections. I also think it makes more sense to have the bars <em>above</em> the section headers instead of below them.</p>
 </li>
 <li>
-<p>Automatic git commit and version information at the bottom of the navigation panel on the left.</p>
+<p>Automatic git commit and version information at the bottom of the navigation panel on the left, and/or at the bottom of every page. (This template repo has both, so you can see what they look like.)</p>
 </li>
 <li>
 <p>A <code>Makefile</code> with rules to publish the HTML and other files that make up the book, either to a web server or to GitHub Pages.</p>
 </li>
 </ul>
 <p><a href="https://github.com/kg4zow/mdbook-template/"><code>https://github.com/kg4zow/mdbook-template/</code></a> contains more detail about how to use this repo.</p>
+<p>The <code>theme/index-template.hbs</code> file also includes a <em>commented-out</em> example of how you might add a link to a page &quot;outside&quot; the book, at the top of the Table of Contents in the navigation panel. This could be useful if you're writing a set of books and want each one to have a link back to a common &quot;list of books&quot; index page.</p>
+<p>Below this are a few example section headers, so you can see what they look like.</p>
 <h1 id="example-h1-section-header"><a class="header" href="#example-h1-section-header">Example H1 Section Header</a></h1>
 <h2 id="example-h2-section-header"><a class="header" href="#example-h2-section-header">Example H2 Section Header</a></h2>
 <h3 id="example-h3-section-header"><a class="header" href="#example-h3-section-header">Example H3 Section Header</a></h3>
@@ -179,11 +189,11 @@
                         <hr/>
                         <div class="version-commit-div" style="float: right">
                             Generated
-                            <span class='version-commit-now'><tt>2022-06-07 23:37:55 +0000</tt></span>
+                            <span class='version-commit-now'><tt>2022-06-08 03:52:46 +0000</tt></span>
                         </div>
                         <div class="version-commit-div">
-                            <span class='version-commit-hash'><tt>initial-12-g468ae4d</tt></span>
-                            <span class='version-commit-time'><tt>2022-06-07 23:37:25 +0000</tt></span>
+                            <span class='version-commit-hash'><tt>initial-13-g0543c3b</tt></span>
+                            <span class='version-commit-time'><tt>2022-06-08 03:51:38 +0000</tt></span>
                         </div>
 <!-- End version-commit content below every page -->
 
