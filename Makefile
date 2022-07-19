@@ -44,6 +44,7 @@ gh-pages: build
 	git worktree add --force "$$WORK" gh-pages ; \
 	rm -rf "$$WORK"/* ; \
 	rsync -av book/ "$$WORK"/ ; \
+	if [ -f CNAME ] ; then cp CNAME "$$WORK"/ ; fi ; \
 	pushd "$$WORK" ; \
 	git add -A ; \
 	git commit -m "Updated gh-pages $$VER" ; \
