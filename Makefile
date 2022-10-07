@@ -20,8 +20,10 @@ push:
 # IF you're going to publish the generated book to a web server, and you're
 # able to use 'rsync' to upload the files ...
 #
-# - Change the 'push:' line to say 'push: rsync'
+# - Change the 'push:' line to include the 'rsync' target
 # - Edit the rsync command below as needed.
+# - For Keybase Sites, the target will be a path under '/keybase/'. Seee
+#   https://jms1.keybase.pub/kbsites/ for more specific examples.
 
 rsync: build
 	rsync -avz --delete book/ host.domain.xyz:/var/www/html/newbook/
@@ -30,7 +32,7 @@ rsync: build
 # IF you're going to publish the generated book to GitHub Pages, using the
 # same repo where you're tracking the source ...
 #
-# - Change the 'push:' line above to say 'push: gh-pages'
+# - Change the 'push:' line above to include the 'gh-pages' target
 #
 # NOTES:
 # - These commands work for me using bash. If you're using some other shell,
