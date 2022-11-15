@@ -81,7 +81,7 @@ $ bash setup-gh-pages
 
 > &#x26A0;&#xFE0F; The script requires `git` version 2.0.7 or later.
 
-Once you've done this, or decided that you don't need to do it, you can remove the script from your repo.
+Once you've done this, or if you don't need to do it, you can remove the script from your repo.
 
 ```
 $ git rm setup-gh-pages
@@ -102,7 +102,7 @@ $ git push --tags
 >
 > If you don't have it and don't want to install it, you can also use the GitHub web interface to create a repo by hand.
 
-If you're publishing to GitHub Pages, be aware that it might take a minute or two before the page is published.
+If you're publishing to GitHub Pages, be aware that it might take a few minutes before the page is published.
 
 ## Working on the book's content
 

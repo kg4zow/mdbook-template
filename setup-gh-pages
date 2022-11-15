@@ -4,8 +4,27 @@
 # John Simpson <jms1@jms1.net> 2022-06-02
 #
 # Add a 'gh-pages' branch to the repo
+#
+# Last update: 2022-11-14 jms1
+# - Make sure we're running git v2.0.7 or higher.
+# - If a 'book/' directory already exists (i.e. if 'mdbook' has already
+#   generated HTML files at least once), copy that instead of creating the
+#   simple 'index.html' file in the new branch.
 
 set -e
+
+########################################
+# Make sure git is version 2.0.7 or higher
+
+REQD="2.0.7"
+GITV="$( git --version | sed 's/[^0-9\.]//g' )"
+XMIN="$( echo -e "$GITV\n$REQD" | sort -V | head -1 )"
+
+if [[ "$XMIN" != "$REQD" ]]
+then
+    echo "ERROR: this requires git version $REQD, you have $GITV"
+    exit 1
+fi
 
 ########################################
 # Make sure we don't already have a 'gh-pages' branch
@@ -17,12 +36,19 @@ then
 fi
 
 ########################################
+# Remember what directory the primary branch is checked out in, so we can
+# check and possibly copy the book/ directory.
+
+MAIN="$( pwd )"
+
+########################################
 # Create a work directory
 
 WORK="$( mktemp -d )"
 
 ########################################
 # Add a new working directory for the repo
+# - the 'git worktree' commands were added in git v2.0.7
 
 git worktree add --detach "$WORK"
 
@@ -31,14 +57,21 @@ git worktree add --detach "$WORK"
 
 pushd "$WORK"
 git checkout --orphan gh-pages
-git rm -rf *
-touch .nojekyll
+git rm -rf * .gitignore
 
 ########################################
-# Create the initial index.html so the new GitHub Pages site doesn't start off
-# with just an empty page.
+# Populate the new directory.
+# - If 'mdbook' has already generated the book at least once, copy that.
+# - If not, create a simple "Coming soon..." page.
 
-cat > index.html <<EOF
+if [[ -f "$MAIN/book/index.html" ]]
+then
+    FULL=true
+    cp -rv "$MAIN/book/" ./
+else
+    FULL=false
+    touch .nojekyll
+    cat > index.html <<EOF
 <html>
 <head>
 <title>Coming soon...</title>
@@ -51,6 +84,7 @@ for the first time.</p>
 </body>
 </html>
 EOF
+fi
 
 ########################################
 # Commit the new files.
@@ -59,9 +93,28 @@ git add .
 git commit -m 'Started gh-pages branch'
 git tag -m 'Initial commit on gh-pages branch' gh-pages-initial
 
-
 ########################################
 # Done, remove the temp directory.
 
 popd
 git worktree remove "$WORK"
+
+########################################
+# Tell the user what's going on
+
+if $FULL
+then
+    cat <<EOF
+
+The 'gh-pages' branch now exists on this machine, containing a copy of the
+book's most recently rendered content.
+
+EOF
+else
+    cat <<EOF
+
+The 'gh-pages' branch now exists on this machine, containing a simple
+"Coming soon" page.
+
+EOF
+fi
