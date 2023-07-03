@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 #
 # version-commit
 # John Simpson <jms1@jms1.net> 2022-04-01
-# Last updated 2022-05-29
+# Last updated 2023-07-03
 #
 # This script does two things:
 #
