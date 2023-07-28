@@ -1,0 +1,533 @@
+#!/usr/bin/env perl -w
+#
+# git2rss
+# John Simpson <jms1@jms1.net> 2023-07-25
+#
+# Generate an RSS feed from the commits in a specified branch in a git repo
+
+require 5.005 ;
+use strict ;
+use warnings ;
+
+use File::Temp qw( tempdir ) ;
+use Getopt::Std ;
+use POSIX qw ( strftime ) ;
+
+########################################
+# getopts
+
+my %opt                 = () ;
+my $branch              = '' ;      # -b:   branch name whose history to list
+my $limit               = 0 ;       # -n:   number of commits, 0=show all
+my $do_debug            = 0 ;       # -d    debug messages
+
+###############################################################################
+#
+# usage
+
+sub usage(;$)
+{
+    my $msg = ( shift || '' ) ;
+
+    print <<EOF ;
+$0 [options] [DIR]
+
+Generate an RSS feed from a git repository's commit history.
+
+If DIR is not specified, the current directory will be used. The directory
+must be a cloned copy of a git repo.
+
+-b ___  Specify a branch whose history to use. If not specified, use whatever
+        branch happens to be checked out in the directory.
+
+-n ___  Specify how many commits to include in the feed. If not specified, all
+        commits in the branch will be included.
+
+-d      Show debug messages.
+
+-h      Show this help message.
+
+EOF
+
+    if ( $msg ne '' )
+    {
+        print $msg ;
+        exit 1 ;
+    }
+
+    exit 0
+}
+
+###############################################################################
+#
+# debug
+
+sub debug(@)
+{
+    $do_debug && print @_ ;
+}
+
+###############################################################################
+#
+# Parse an INI-style config file
+
+sub parse_config_ini($)
+{
+    my $filename    = shift ;
+    my %rv          = () ;
+
+    open( C , '<' , $filename )
+        or die "ERROR: can't read \"$filename\": $!\n" ;
+
+    my $section = '' ;
+
+    while ( my $line = <C> )
+    {
+        ########################################
+        # Trim whitespace and comments, ignore otherwise empty lines
+
+        $line =~ s|\s+$|| ;
+        $line =~ s|^\s*#.*|| ;
+        next unless ( $line ne '' ) ;
+
+        ########################################
+        # If this line starts a section, remember the section name
+
+        if ( $line =~ m|^\[(.*?)\]| )
+        {
+            $section = $1 ;
+        }
+
+        ########################################
+        # If this line is a "key=value" line, parse and remember it
+
+        elsif ( $line =~ m|^\s*(\S+)\s*\=\s*(.*)$| )
+        {
+            my ( $k , $v ) = ( $1 , $2 ) ;
+
+            if ( $section ne '' )
+            {
+                $k = lc( "$section.$k" ) ;
+            }
+
+            if ( $v =~ m|^"(.*?)"| )
+            {
+                $v = $1 ;
+            }
+
+            $rv{$k} = $v ;
+        }
+    }
+
+    close C ;
+
+    return %rv ;
+}
+
+###############################################################################
+#
+# Make a value safe for use in "HTML within XML"
+
+sub sanitize($)
+{
+    my $x = shift ;
+
+    $x =~ s|&|&amp;amp;|g ;
+    $x =~ s|<|&amp;lt;|g ;
+    $x =~ s|>|&amp;gt;|g ;
+
+    return $x ;
+}
+
+###############################################################################
+#
+# Read commits into memory
+
+sub read_commits($$$$)
+{
+    my $dir         = shift ;
+    my $branch      = shift ;
+    my $limit       = shift ;
+    my $show_email  = shift ;
+
+    ########################################
+    # Info about the commits we're reading
+
+    my %commit  = () ;      # hash => { attributes each commit }
+    my @cseq    = () ;      # sequence commit hashes were printed
+
+    ########################################
+    # Build "author" format string
+
+    my $aformat = ':author: %an%n' ;
+    if ( $show_email eq 'full' )
+    {
+        $aformat = ':author: %an <%aE>%n' ;
+    }
+    elsif ( $show_email eq 'user' )
+    {
+        $aformat = ':author: %an <%aL>%n' ;
+    }
+
+    ############################################################
+    # Run the command
+
+    my $lopt = $limit ? "-n $limit" : '' ;
+
+    my $log_cmd = "( cd \"$dir\" && "
+        . "git log $lopt"
+        . ' --no-abbrev-commit'
+        . ' --no-show-signature'
+        . ' --name-status'
+        . ' --format=format:":commit: %H%n'
+            . ':date: %at %aD%n'
+            . $aformat
+            . ':subject: %s%n'
+            . ':body: %b%n'
+            . ':files:"'
+        . ( ( $branch ne '' ) ? " '$branch'" : '' )
+        . " )" ;
+
+    debug "\$log_cmd=\"$log_cmd\"\n" ;
+
+    open ( I , "$log_cmd |" )
+        or die "$log_cmd\nERROR: $!\n" ;
+
+    ########################################
+    # Process the commits
+
+    my $the_commit  = '' ;
+    my $the_t       = 0  ;
+    my $the_date    = '' ;
+    my $the_author  = '' ;
+    my $the_email   = '' ;
+    my $the_subject = '' ;
+    my $the_body    = '' ;
+    my $the_files   = '' ;
+
+    my $in_body     = 0 ;
+    my $in_files    = 0 ;
+
+    while ( my $line = <I> )
+    {
+        debug "LINE \"$line\"\n" ;
+
+        $line =~ s|\s+$|| ;
+
+        if ( $line =~ m|^:commit: (\S+)| )
+        {
+            my $this_commit = $1 ;
+
+            if ( $the_commit ne '' )
+            {
+                ########################################
+                # Trim any extra blank lines from the end of body/files
+
+                $the_body   =~ s|\s+$||s ;
+                $the_files  =~ s|\s+$||s ;
+
+                ########################################
+                # Remember this commit's info
+
+                push( @cseq , $the_commit ) ;
+                $commit{$the_commit}->{'t'      } = $the_t       ;
+                $commit{$the_commit}->{'date'   } = $the_date    ;
+                $commit{$the_commit}->{'author' } = $the_author  ;
+                $commit{$the_commit}->{'email'  } = $the_email   ;
+                $commit{$the_commit}->{'subject'} = $the_subject ;
+                $commit{$the_commit}->{'body'   } = $the_body    ;
+                $commit{$the_commit}->{'files'  } = $the_files   ;
+            }
+
+            ########################################
+            # Start remembering the new commit
+
+            $the_commit  = $this_commit ;
+            $the_t       = 0  ;
+            $the_date    = '' ;
+            $the_author  = '' ;
+            $the_email   = '' ;
+            $the_subject = '' ;
+            $the_body    = '' ;
+            $the_files   = '' ;
+            $in_body     = 0 ;
+            $in_files    = 0 ;
+        }
+        elsif ( $line =~ m|^:date: (\d+) (.+)$| )
+        {
+            ( $the_t , $the_date ) = ( $1 , $2 ) ;
+        }
+        elsif ( $line =~ m|^:author: (.+) <(.*)>$| )
+        {
+            ( $the_author , $the_email ) = ( $1 , $2 ) ;
+        }
+        elsif ( $line =~ m|^:author: (.+)$| )
+        {
+            $the_author = $1 ;
+        }
+        elsif ( $line =~ m|^:subject: (.+)$| )
+        {
+            $the_subject = $1 ;
+        }
+        elsif ( $line =~ m|^:body: (.+)$| )
+        {
+            $the_body   = $1 ;
+            $in_body    = 1 ;
+            $in_files   = 0 ;
+        }
+        elsif ( $line =~ m|^:files:$| )
+        {
+            $in_body    = 0 ;
+            $in_files   = 1 ;
+        }
+        elsif ( $in_body )
+        {
+            $the_body   .= "\n$line" ;
+        }
+        elsif ( $in_files )
+        {
+            $the_files   .= "$line\n" ;
+        }
+    }
+
+    ########################################
+    # Make sure the last commit is processed
+
+    if ( $the_commit ne '' )
+    {
+        ########################################
+        # Trim any extra blank lines from the end of body/files
+
+        $the_body   =~ s|\s+$||s ;
+        $the_files  =~ s|\s+$||s ;
+
+        ########################################
+        # Remember this commit's info
+
+        push( @cseq , $the_commit ) ;
+        $commit{$the_commit}->{'t'      } = $the_t       ;
+        $commit{$the_commit}->{'date'   } = $the_date    ;
+        $commit{$the_commit}->{'author' } = $the_author  ;
+        $commit{$the_commit}->{'email'  } = $the_email   ;
+        $commit{$the_commit}->{'subject'} = $the_subject ;
+        $commit{$the_commit}->{'body'   } = $the_body    ;
+        $commit{$the_commit}->{'files'  } = $the_files   ;
+    }
+
+    ########################################
+    # Finished
+
+    close I ;
+
+    $commit{''} = join( ':' , @cseq ) ;
+
+    return %commit ;
+}
+
+###############################################################################
+#
+# Process a git repo directory
+
+sub process_dir($$$)
+{
+    my $dir     = shift ;
+    my $branch  = shift ;
+    my $limit   = shift ;
+
+    debug "process_dir('$dir','$branch','$limit') starting\n" ;
+
+    ########################################
+    # Per-repo data
+
+    my %commit              = () ;      # hash => { info about each commit }
+    my @cseq                = () ;      # sequence commit hashes were printed
+    my $c_pubDate           = '' ;      # CALC: timestamp of most recent commit
+    my $c_lastBuildDate     = '' ;      # CALC: timestamp when script was run
+
+    ############################################################
+    # Find the root of the git repo
+
+    my $cmd = "( cd \"$dir\" ; git rev-parse --show-toplevel )" ;
+    open( I , "$cmd |" )
+        or die "ERROR: $cmd: $!\n" ;
+    my $repo_dir = <I> ;
+    close I ;
+
+    chomp $repo_dir ;
+
+    debug "\$repo_dir='$repo_dir'\n" ;
+
+    ############################################################
+    # If a branch was specified, clone that branch to a temp directory
+    # - this *could* also be done using a worktree, but that requires git
+    #   2.0.5 or higher, and we don't know for sure that will be available
+    # - whether a clone was made or not, $work_dir will point to where all
+    #   further checks will be done from
+
+    my $work_dir = $repo_dir ;
+
+    if ( $branch ne '' )
+    {
+        $work_dir = tempdir( CLEANUP => 1 ) ;
+
+        $cmd = " git clone -l"
+                . ( $limit ? " --depth \"$limit\"" : ' --single-branch' )
+                . ( ( $branch ne '' ) ? " -b \"$branch\"" : '' )
+                . " \"$repo_dir\""
+                . " \"$work_dir\"" ;
+
+        debug "CLONE \$cmd: $cmd\n" ;
+
+        open ( L , "$cmd 2>&1 |" )
+            or die "ERROR: $cmd: $!\n" ;
+
+        my $clone_out = '' ;
+        while ( my $line = <L> )
+        {
+            $clone_out .= $line ;
+        }
+
+        close L ;
+
+        unless ( -d "$work_dir/.git" )
+        {
+            die "ERROR: clone failed\n$clone_out" ;
+        }
+    }
+
+    ########################################
+    # read .git2rss file
+    # - not all RSS Feed attributes are supported
+    #   https://www.rssboard.org/rss-specification
+
+    unless ( -f "$work_dir/.git2rss" )
+    {
+        die "ERROR: '.git2rss' file does not exist in repo root\n" ;
+    }
+
+    my %config = parse_config_ini( "$work_dir/.git2rss" ) ;
+
+    my $c_title         = ( $config{'title'}       || 'untitled'   ) ;
+    my $c_link          = ( $config{'link'}        || ''           ) ;
+    my $c_description   = ( $config{'description'} || 'generated by git2rss' ) ;
+    my $c_image_url     = ( $config{'image_url'}   || ''           ) ;
+    my $show_email      = ( $config{'show_email'}  || 'user'       ) ;
+    my $commit_url      = ( $config{'commit_url'}  || ''           ) ;
+
+    if ( $c_link eq '' )
+    {
+        die "ERROR: .git2rss: missing or empty link= item\n" ;
+    }
+
+    ########################################
+    # Read commit info into memory
+
+    %commit = read_commits( $work_dir , $branch , $limit , $show_email ) ;
+    @cseq   = split( /:/ , $commit{''} ) ;
+
+    ########################################
+    # Get timestamp of most recent commit
+    # - this becomes the pubDate attribute of the feed
+
+    my $max_t = 0 ;
+
+    for my $c ( keys %commit )
+    {
+        if ( $c ne '' )
+        {
+            if ( $commit{$c}->{'t'} > $max_t )
+            {
+                $max_t      = $commit{$c}->{'t'} ;
+                $c_pubDate  = $commit{$c}->{'date'} ;
+            }
+        }
+    }
+
+    ########################################
+    # Get current date/time
+
+    $ENV{'TZ'} = 'UTC' ;
+    $c_lastBuildDate = strftime( '%a, %d %b %Y %H:%M:%S %z' , gmtime() ) ;
+
+    ########################################
+    # Write RSS file
+
+    print <<EOF ;
+<rss version="2.0">
+  <channel>
+    <title>$c_title</title>
+    <link>$c_link</link>
+    <description>$c_description</description>
+    <pubDate>$c_pubDate</pubDate>
+    <lastBuildDate>$c_lastBuildDate</lastBuildDate>
+EOF
+
+    for my $c ( @cseq )
+    {
+        my $title       = sanitize( $commit{$c}->{'subject'} ) ;
+        my $author      = sanitize( $commit{$c}->{'author'}  ) ;
+        my $email       = sanitize( $commit{$c}->{'email'}   ) ;
+        my $pubDate     = sanitize( $commit{$c}->{'date'}    ) ;
+        my $body        = sanitize( $commit{$c}->{'body'}    ) ;
+        my $files       = sanitize( $commit{$c}->{'files'}   ) ;
+
+        my $bf = ( $body ne '' ) ? "$body\n\n" : '' ;
+        $bf .= $files ;
+
+        my $aline = "Author: $author"
+            . ( ( $email ne '' ) ? " &amp;lt;$email&amp;gt;" : '' ) ;
+
+        print <<EOF ;
+    <item>
+      <guid>$c</guid>
+      <pubDate>$pubDate</pubDate>
+EOF
+
+        if ( $commit_url ne '' )
+        {
+            my $url = sprintf( $commit_url , $c ) ;
+
+            print <<EOF ;
+      <link>$url</link>
+EOF
+        }
+
+        print <<EOF ;
+      <title>$title</title>
+      <author>$author</author>
+      <description><pre>Commit: $c
+$aline
+Date: $pubDate
+
+$title
+
+$bf</pre></description>
+    </item>
+EOF
+    }
+
+    print <<EOF ;
+  </channel>
+</rss>
+EOF
+}
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+getopts( 'hdb:n:' , \%opt ) ;
+$opt{'h'} && usage() ;
+$do_debug   = ( $opt{'d'} ? 1 : 0 ) ;
+$branch     = ( $opt{'b'} || '' ) ;
+$limit      = ( $opt{'n'} || 0  ) ;
+
+if ( $limit =~ m|\D| )
+{
+    die "ERROR: -n value must be a positive integer\n" ;
+}
+
+my $dir     = ( shift || '.' ) ;
+
+process_dir( $dir , $branch , $limit ) ;

@@ -60,6 +60,20 @@ If the generated HTML files are going to be hosted on a web server, or with a se
 $ nano Makefile
 ```
 
+### The `git2rss` script
+
+The template's `Makefile` is set up to use my [`git2rss`](https://github.com/kg4zow/git2rss) script to generate an RSS feed containing the commits in the repo's `main` branch.
+
+**If you plan to use this feature**, edit the `.git2rss` file and customize the RSS feed's title, link, and other attributes as needed. When you publish the finished site, it will have a `commits.xml` file containing the feed. Whatever the URL is for the finished site, you can point an RSS reader to this file and "subscribe" to get notified whenever new commits are made to the book's source files.
+
+For example, you can subscribe to [`https://kg4zow.github.io/mdbook-template/commits.xml`](https://kg4zow.github.io/mdbook-template/commits.xml) to watch for updates to the `kg4zow/mdbook-template` repo.
+
+Note that the file itself contains an XML list of the repo's commit history. If the repo is public, there's no information in the file that somebody couldn't get on their own by cloning a copy of the repo, or by visiting the repo's web interface (assuming it's hosted on a git server which *has* a web interface, of course).
+
+**If you don't *want* this feature**, delete the `git2rss` script and the `.git2rss` file.
+
+You *can* also remove the line in the `Makefile` which mentions `git2rss`. If you don't, the `Makefile` checks whether the script and config file both exist before trying to run the script, so it won't hurt anything if you *don't* remove the line.
+
 ### Initialize a new git repo
 
 Also create and tag the initial commit.

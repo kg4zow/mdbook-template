@@ -1,0 +1,9 @@
+# Per-repo settings to control what 'git2rss' does in this repo
+# https://github.com/kg4zow/git2rss
+
+title       = mdbook-template
+link        = https://github.com/kg4zow/mdbook-template
+description = Template for mdbook books
+image_url   = ""
+show_email  = user
+commit_url  = https://github.com/kg4zow/mdbook-template/commit/%s
