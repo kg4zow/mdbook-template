@@ -1,0 +1,328 @@
+<rss version="2.0">
+  <channel>
+    <title>mdbook-template</title>
+    <link>https://github.com/kg4zow/mdbook-template</link>
+    <description>Template for mdbook books</description>
+    <pubDate>Thu, 27 Jul 2023 21:52:14 -0400</pubDate>
+    <lastBuildDate>Fri, 28 Jul 2023 01:53:33 +0000</lastBuildDate>
+    <item>
+      <guid>66db2737ea4d43ae69c51dd086b4a74f28aad85f</guid>
+      <pubDate>Thu, 27 Jul 2023 21:52:14 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/66db2737ea4d43ae69c51dd086b4a74f28aad85f</link>
+      <title>Added `git2rss` script/config, updated README.md</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 66db2737ea4d43ae69c51dd086b4a74f28aad85f
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Thu, 27 Jul 2023 21:52:14 -0400
+
+Added `git2rss` script/config, updated README.md
+
+A	.git2rss
+M	Makefile
+M	README.md
+A	git2rss</pre></description>
+    </item>
+    <item>
+      <guid>9b439e69cd093b4e42b98d83c2fe227baf49ac96</guid>
+      <pubDate>Mon, 3 Jul 2023 16:45:52 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/9b439e69cd093b4e42b98d83c2fe227baf49ac96</link>
+      <title>Updated #! line in version-commit script</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 9b439e69cd093b4e42b98d83c2fe227baf49ac96
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 3 Jul 2023 16:45:52 -0400
+
+Updated #! line in version-commit script
+
+to use the first `perl` in the PATH, instead of from a fixed location.
+Helpful when you're using `perl` from Homebrew, and need to be sure
+that compiled modules match the `perl` executable you're using.
+
+M	version-commit</pre></description>
+    </item>
+    <item>
+      <guid>53bf7730db462095dfcaf0203e5c2f8f123f52ee</guid>
+      <pubDate>Tue, 15 Nov 2022 00:23:53 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/53bf7730db462095dfcaf0203e5c2f8f123f52ee</link>
+      <title>Updated `setup-gh-pages` script</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 53bf7730db462095dfcaf0203e5c2f8f123f52ee
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 15 Nov 2022 00:23:53 -0500
+
+Updated `setup-gh-pages` script
+
+- Make sure git is v2.0.7 or later.
+- If the book has already been generated at least once, copy the
+  generated book to the work directory before creating the initial
+  commit in the `gh-pages` branch.
+
+M	README.md
+M	setup-gh-pages</pre></description>
+    </item>
+    <item>
+      <guid>6f8d6a1cdc8d99202f390137f673bc33c9bd2710</guid>
+      <pubDate>Fri, 7 Oct 2022 13:18:42 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/6f8d6a1cdc8d99202f390137f673bc33c9bd2710</link>
+      <title>Minor updates to `README.md`, and to the comments in `Makefile`.</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 6f8d6a1cdc8d99202f390137f673bc33c9bd2710
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Fri, 7 Oct 2022 13:18:42 -0400
+
+Minor updates to `README.md`, and to the comments in `Makefile`.
+
+M	Makefile
+M	README.md</pre></description>
+    </item>
+    <item>
+      <guid>3d8ba2ef7b35ce273cd71caf4292f7e31ba3e2d2</guid>
+      <pubDate>Mon, 18 Jul 2022 20:05:35 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/3d8ba2ef7b35ce273cd71caf4292f7e31ba3e2d2</link>
+      <title>Added 'cp CNAME' to 'make gh-pages' target</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 3d8ba2ef7b35ce273cd71caf4292f7e31ba3e2d2
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 18 Jul 2022 20:05:35 -0400
+
+Added 'cp CNAME' to 'make gh-pages' target
+
+- This file tells Github Pages what custom hostname to use for the
+  generated site.
+
+M	Makefile</pre></description>
+    </item>
+    <item>
+      <guid>0543c3be2e791e6c594dad0da8e42bf8405755fa</guid>
+      <pubDate>Tue, 7 Jun 2022 23:51:38 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/0543c3be2e791e6c594dad0da8e42bf8405755fa</link>
+      <title>Added a (commented-out) link above the ToC.</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 0543c3be2e791e6c594dad0da8e42bf8405755fa
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 7 Jun 2022 23:51:38 -0400
+
+Added a (commented-out) link above the ToC.
+
+M	src/introduction.md
+M	theme/index-template.hbs</pre></description>
+    </item>
+    <item>
+      <guid>468ae4d605e2be855517dfcf03ebb96278042373</guid>
+      <pubDate>Tue, 7 Jun 2022 19:37:25 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/468ae4d605e2be855517dfcf03ebb96278042373</link>
+      <title>Updated README.md</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 468ae4d605e2be855517dfcf03ebb96278042373
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 7 Jun 2022 19:37:25 -0400
+
+Updated README.md
+
+M	README.md</pre></description>
+    </item>
+    <item>
+      <guid>8025537a922026589b0fd854a21ad84e9f7126da</guid>
+      <pubDate>Tue, 7 Jun 2022 19:37:16 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/8025537a922026589b0fd854a21ad84e9f7126da</link>
+      <title>NOT commenting out version-commit page footer</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 8025537a922026589b0fd854a21ad84e9f7126da
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 7 Jun 2022 19:37:16 -0400
+
+NOT commenting out version-commit page footer
+
+- This allows people looking at the online preview to see what the
+  version block at the bottom of each page will look like.
+
+M	theme/index-template.hbs</pre></description>
+    </item>
+    <item>
+      <guid>62debc7b72254208de14d686a7c2444439827ad1</guid>
+      <pubDate>Tue, 7 Jun 2022 19:35:49 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/62debc7b72254208de14d686a7c2444439827ad1</link>
+      <title>Updated Makefile</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 62debc7b72254208de14d686a7c2444439827ad1
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 7 Jun 2022 19:35:49 -0400
+
+Updated Makefile
+
+- changed 'git add .' to 'git add -A', so it automatically removes any
+  files which were removed from the working directory, from the repo.
+
+M	Makefile</pre></description>
+    </item>
+    <item>
+      <guid>664ab5dddbb1b316d1be9fab2380c90890bd6395</guid>
+      <pubDate>Fri, 3 Jun 2022 18:03:32 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/664ab5dddbb1b316d1be9fab2380c90890bd6395</link>
+      <title>More documentation tweaks.</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 664ab5dddbb1b316d1be9fab2380c90890bd6395
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Fri, 3 Jun 2022 18:03:32 -0400
+
+More documentation tweaks.
+
+Also added a commented out section in `theme/index-template.hbs` which
+if un-commented, will put the commit info and generation timestamp at
+the bottom of each page, so it will be included if somebody prints the
+book.
+
+M	README.md
+M	book.toml
+M	src/introduction.md
+M	theme/index-template.hbs</pre></description>
+    </item>
+    <item>
+      <guid>52238827b4959436bbad19abcba8ffec98644c64</guid>
+      <pubDate>Fri, 3 Jun 2022 16:36:11 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/52238827b4959436bbad19abcba8ffec98644c64</link>
+      <title>Documentation tweaks</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 52238827b4959436bbad19abcba8ffec98644c64
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Fri, 3 Jun 2022 16:36:11 -0400
+
+Documentation tweaks
+
+M	README.md
+M	src/introduction.md</pre></description>
+    </item>
+    <item>
+      <guid>5519f2b523c1182ad9f31fc63c57facbb31dbed0</guid>
+      <pubDate>Thu, 2 Jun 2022 12:53:45 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/5519f2b523c1182ad9f31fc63c57facbb31dbed0</link>
+      <title>Added setup-gh-pages script</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 5519f2b523c1182ad9f31fc63c57facbb31dbed0
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Thu, 2 Jun 2022 12:53:45 -0400
+
+Added setup-gh-pages script
+
+M	README.md
+A	setup-gh-pages</pre></description>
+    </item>
+    <item>
+      <guid>fd36c82fc704cc427cf3933ec164f6a60de83a33</guid>
+      <pubDate>Thu, 2 Jun 2022 00:03:55 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/fd36c82fc704cc427cf3933ec164f6a60de83a33</link>
+      <title>Added support for publishing to GitHub Pages.</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: fd36c82fc704cc427cf3933ec164f6a60de83a33
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Thu, 2 Jun 2022 00:03:55 -0400
+
+Added support for publishing to GitHub Pages.
+
+Also updated src/introduction.md to briefly explain the customizations
+I'm adding in the repo.
+
+M	Makefile
+M	README.md
+M	src/introduction.md</pre></description>
+    </item>
+    <item>
+      <guid>e8ae70ff4a32773151a6615e29a24ed45fcaad72</guid>
+      <pubDate>Tue, 31 May 2022 01:59:43 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/e8ae70ff4a32773151a6615e29a24ed45fcaad72</link>
+      <title>Updated documentation.</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: e8ae70ff4a32773151a6615e29a24ed45fcaad72
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 31 May 2022 01:59:43 -0400
+
+Updated documentation.
+
+M	README.md
+M	src/introduction.md</pre></description>
+    </item>
+    <item>
+      <guid>895f87583f459447410452814bd33cd260a1fc6b</guid>
+      <pubDate>Tue, 31 May 2022 01:58:47 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/895f87583f459447410452814bd33cd260a1fc6b</link>
+      <title>Updated Makefile to push HTML to mdbook-template.jms1.info site</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 895f87583f459447410452814bd33cd260a1fc6b
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 31 May 2022 01:58:47 -0400
+
+Updated Makefile to push HTML to mdbook-template.jms1.info site
+
+M	Makefile</pre></description>
+    </item>
+    <item>
+      <guid>bdc5cc9fe4c547675b1894bceb4ec19fc6ca32e5</guid>
+      <pubDate>Mon, 30 May 2022 01:55:11 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/bdc5cc9fe4c547675b1894bceb4ec19fc6ca32e5</link>
+      <title>Updated book.toml</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: bdc5cc9fe4c547675b1894bceb4ec19fc6ca32e5
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 30 May 2022 01:55:11 -0400
+
+Updated book.toml
+
+- added GitHub URL
+- tweaked a few other options
+
+M	book.toml</pre></description>
+    </item>
+    <item>
+      <guid>acd15bb34ca104cf3323ade4459884d08efbd2b7</guid>
+      <pubDate>Mon, 30 May 2022 01:53:45 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/acd15bb34ca104cf3323ade4459884d08efbd2b7</link>
+      <title>Updated README.md after seeing how GitHub renders the file</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: acd15bb34ca104cf3323ade4459884d08efbd2b7
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 30 May 2022 01:53:45 -0400
+
+Updated README.md after seeing how GitHub renders the file
+
+M	README.md</pre></description>
+    </item>
+    <item>
+      <guid>0b1a659e1f1bfb6f71d48b2579eb13e49eb6d512</guid>
+      <pubDate>Mon, 30 May 2022 01:29:55 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/0b1a659e1f1bfb6f71d48b2579eb13e49eb6d512</link>
+      <title>Added initial content</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 0b1a659e1f1bfb6f71d48b2579eb13e49eb6d512
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 30 May 2022 01:29:55 -0400
+
+Added initial content
+
+A	LICENSE.txt
+A	Makefile
+A	README.md
+A	book.toml
+A	section-lines.css
+A	src/SUMMARY.md
+A	src/chapter_1.md
+A	src/introduction.md
+A	theme/index-template.hbs
+A	version-commit
+A	version-commit.css</pre></description>
+    </item>
+    <item>
+      <guid>13b613a250c5c1f9690d5d37fe2ae5c1637b6ed2</guid>
+      <pubDate>Mon, 30 May 2022 00:18:59 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/13b613a250c5c1f9690d5d37fe2ae5c1637b6ed2</link>
+      <title>Initial commit</title>
+      <author>John Simpson</author>
+      <description><pre>Commit: 13b613a250c5c1f9690d5d37fe2ae5c1637b6ed2
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 30 May 2022 00:18:59 -0400
+
+Initial commit
+
+A	.gitignore</pre></description>
+    </item>
+  </channel>
+</rss>
