@@ -3,7 +3,39 @@
 # git2rss
 # John Simpson <jms1@jms1.net> 2023-07-25
 #
-# Generate an RSS feed from the commits in a specified branch in a git repo
+# Generate an RSS feed from the commits in the current branch in a git repo
+#
+# 2023-07-29 jms1 - added command line options so that configuration can be
+#   done from the command line *or* from a config file, also removed option
+#   to specify a branch (make sure the directory has the correct branch
+#   checked out first)
+#
+###############################################################################
+#
+# MIT License
+#
+# Copyright (c) 2023 John Simpson
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+###############################################################################
 
 require 5.005 ;
 use strict ;
@@ -16,10 +48,16 @@ use POSIX qw ( strftime ) ;
 ########################################
 # getopts
 
-my %opt                 = () ;
-my $branch              = '' ;      # -b:   branch name whose history to list
-my $limit               = 0 ;       # -n:   number of commits, 0=show all
-my $do_debug            = 0 ;       # -d    debug messages
+my %opt             = () ;
+my $do_debug        = 0 ;       # -d    debug messages
+my $title           = '' ;      # -t:   feed title
+my $link            = '' ;      # -l:   feed link
+my $description     = '' ;      # -d:   feed description
+my $image_url       = '' ;      # -i:   feed image URL
+my $show_email      = '' ;      # -e:   how to show emails (full, name, none)
+my $commit_url      = '' ;      # -c:   URL for individual commit
+my $limit           = 0 ;       # -n:   number of commits, 0=show all
+my $only_opt        = 0 ;       # -o    only look at command line options
 
 ###############################################################################
 #
@@ -35,13 +73,37 @@ $0 [options] [DIR]
 Generate an RSS feed from a git repository's commit history.
 
 If DIR is not specified, the current directory will be used. The directory
-must be a cloned copy of a git repo.
+must be a cloned copy of a git repo, with the branch whose history is being
+reported, already checked out.
 
--b ___  Specify a branch whose history to use. If not specified, use whatever
-        branch happens to be checked out in the directory.
+The feed itself can be configured using command line options, OR using a
+config file called '.git2rss' in the root directory of the repo. Command
+line options will override a config file.
 
--n ___  Specify how many commits to include in the feed. If not specified, all
-        commits in the branch will be included.
+Feed configuration
+
+-t ___  title=___       Feed title (required)
+
+-l ___  link=___        URL for feed as a whole (required)
+
+-d ___  description=___ Short description of the feed (required)
+
+-i ___  image_url=___   URL of image for feed as a whole (optional)
+
+-e ___  show_email=___  How to show email addresses in the commit messages
+                        - full   Show full email address
+                        - name   Only show name (before '@')
+                        - none   Don't show email at all (default)
+
+-c ___  commit_url=___  URL for each commit.
+                        - Any '%s' will be replaced with the commit hash.
+
+-n ___  limit=___       How many commits to include in the feed. If zero or
+                          not specified, all commits will be included.
+
+Other options
+
+-o      Only check command line options, ignore any '.git2rss' file.
 
 -d      Show debug messages.
 
@@ -143,10 +205,9 @@ sub sanitize($)
 #
 # Read commits into memory
 
-sub read_commits($$$$)
+sub read_commits($$$)
 {
     my $dir         = shift ;
-    my $branch      = shift ;
     my $limit       = shift ;
     my $show_email  = shift ;
 
@@ -185,7 +246,6 @@ sub read_commits($$$$)
             . ':subject: %s%n'
             . ':body: %b%n'
             . ':files:"'
-        . ( ( $branch ne '' ) ? " '$branch'" : '' )
         . " )" ;
 
     debug "\$log_cmd=\"$log_cmd\"\n" ;
@@ -325,209 +385,190 @@ sub read_commits($$$$)
 }
 
 ###############################################################################
-#
-# Process a git repo directory
+###############################################################################
+###############################################################################
 
-sub process_dir($$$)
+getopts( 'hDt:l:d:i:e:c:n:o' , \%opt ) ;
+$opt{'h'} && usage() ;
+$do_debug   = ( $opt{'D'} ? 1 : 0 ) ;
+$only_opt   = ( $opt{'o'} ? 1 : 0 ) ;
+
+my $dir     = ( shift || '.' ) ;
+
+########################################
+# Find the root of the git repo
+
+my $cmd = "( cd \"$dir\" ; git rev-parse --show-toplevel )" ;
+open( I , "$cmd |" )
+    or die "ERROR: $cmd: $!\n" ;
+my $repo_dir = <I> ;
+close I ;
+
+chomp $repo_dir ;
+
+debug "\$repo_dir='$repo_dir'\n" ;
+
+########################################
+# read .git2rss file (if it exists)
+# - not all RSS Feed attributes are supported
+#   https://www.rssboard.org/rss-specification
+
+my %config = () ;
+
+unless( $only_opt )
 {
-    my $dir     = shift ;
-    my $branch  = shift ;
-    my $limit   = shift ;
-
-    debug "process_dir('$dir','$branch','$limit') starting\n" ;
-
-    ########################################
-    # Per-repo data
-
-    my %commit              = () ;      # hash => { info about each commit }
-    my @cseq                = () ;      # sequence commit hashes were printed
-    my $c_pubDate           = '' ;      # CALC: timestamp of most recent commit
-    my $c_lastBuildDate     = '' ;      # CALC: timestamp when script was run
-
-    ############################################################
-    # Find the root of the git repo
-
-    my $cmd = "( cd \"$dir\" ; git rev-parse --show-toplevel )" ;
-    open( I , "$cmd |" )
-        or die "ERROR: $cmd: $!\n" ;
-    my $repo_dir = <I> ;
-    close I ;
-
-    chomp $repo_dir ;
-
-    debug "\$repo_dir='$repo_dir'\n" ;
-
-    ############################################################
-    # If a branch was specified, clone that branch to a temp directory
-    # - this *could* also be done using a worktree, but that requires git
-    #   2.0.5 or higher, and we don't know for sure that will be available
-    # - whether a clone was made or not, $work_dir will point to where all
-    #   further checks will be done from
-
-    my $work_dir = $repo_dir ;
-
-    if ( $branch ne '' )
+    if ( -f "$repo_dir/.git2rss" )
     {
-        $work_dir = tempdir( CLEANUP => 1 ) ;
-
-        $cmd = " git clone -l"
-                . ( $limit ? " --depth \"$limit\"" : ' --single-branch' )
-                . ( ( $branch ne '' ) ? " -b \"$branch\"" : '' )
-                . " \"$repo_dir\""
-                . " \"$work_dir\"" ;
-
-        debug "CLONE \$cmd: $cmd\n" ;
-
-        open ( L , "$cmd 2>&1 |" )
-            or die "ERROR: $cmd: $!\n" ;
-
-        my $clone_out = '' ;
-        while ( my $line = <L> )
-        {
-            $clone_out .= $line ;
-        }
-
-        close L ;
-
-        unless ( -d "$work_dir/.git" )
-        {
-            die "ERROR: clone failed\n$clone_out" ;
-        }
+        %config = parse_config_ini( "$repo_dir/.git2rss" ) ;
     }
+}
 
-    ########################################
-    # read .git2rss file
-    # - not all RSS Feed attributes are supported
-    #   https://www.rssboard.org/rss-specification
+########################################
+# Figure out the config values
 
-    unless ( -f "$work_dir/.git2rss" )
+$title          = ( defined $opt{'t'} ) ? $opt{'t'} : ( $config{'title'      } || '' ) ;
+$link           = ( defined $opt{'l'} ) ? $opt{'l'} : ( $config{'link'       } || '' ) ;
+$description    = ( defined $opt{'d'} ) ? $opt{'d'} : ( $config{'description'} || '' ) ;
+$image_url      = ( defined $opt{'i'} ) ? $opt{'i'} : ( $config{'image_url'  } || '' ) ;
+$show_email     = ( defined $opt{'e'} ) ? $opt{'e'} : ( $config{'show_email' } || '' ) ;
+$commit_url     = ( defined $opt{'c'} ) ? $opt{'c'} : ( $config{'commit_url' } || '' ) ;
+$limit          = ( defined $opt{'n'} ) ? $opt{'n'} : ( $config{'limit'      } || 0  ) ;
+
+########################################
+# Make sure the required values are present
+
+my $err = 0 ;
+if ( $title eq '' )
+{
+    print "ERROR: title (-t) not specified\n" ;
+    $err ++ ;
+}
+
+if ( $link eq '' )
+{
+    print "ERROR: link (-l) not specified\n" ;
+    $err ++ ;
+}
+
+if ( $description eq '' )
+{
+    print "ERROR: description (-d) not specified\n" ;
+    $err ++ ;
+}
+
+if ( $commit_url ne '' )
+{
+    if ( $commit_url !~ m|%s| )
     {
-        die "ERROR: '.git2rss' file does not exist in repo root\n" ;
+        print "ERROR: commit_url (-c_ does not contain '%s'\n" ;
+        $err ++ ;
     }
+}
 
-    my %config = parse_config_ini( "$work_dir/.git2rss" ) ;
+if ( $limit !~ m|^\d+$| )
+{
+    print "ERROR: invalid limit (-n) value\n" ;
+    $err ++ ;
+}
 
-    my $c_title         = ( $config{'title'}       || 'untitled'   ) ;
-    my $c_link          = ( $config{'link'}        || ''           ) ;
-    my $c_description   = ( $config{'description'} || 'generated by git2rss' ) ;
-    my $c_image_url     = ( $config{'image_url'}   || ''           ) ;
-    my $show_email      = ( $config{'show_email'}  || 'user'       ) ;
-    my $commit_url      = ( $config{'commit_url'}  || ''           ) ;
+if ( $err )
+{
+    die "cannot continue\n" ;
+}
 
-    if ( $c_link eq '' )
+###############################################################################
+#
+# Read commit info into memory
+
+my %commit = read_commits( $repo_dir , $limit , $show_email ) ;
+
+my @cseq = split( /:/ , $commit{''} ) ;
+delete $commit{''} ;
+
+########################################
+# Get timestamp of most recent commit
+# - this becomes the pubDate attribute of the feed
+
+my $max_t   = 0 ;
+my $pubDate = '' ;
+
+for my $c ( keys %commit )
+{
+    if ( $commit{$c}->{'t'} > $max_t )
     {
-        die "ERROR: .git2rss: missing or empty link= item\n" ;
+        $max_t      = $commit{$c}->{'t'} ;
+        $pubDate    = $commit{$c}->{'date'} ;
     }
+}
 
-    ########################################
-    # Read commit info into memory
+########################################
+# Get current date/time
 
-    %commit = read_commits( $work_dir , $branch , $limit , $show_email ) ;
-    @cseq   = split( /:/ , $commit{''} ) ;
+$ENV{'TZ'} = 'UTC' ;
+my $lastBuildDate = strftime( '%a, %d %b %Y %H:%M:%S %z' , gmtime() ) ;
 
-    ########################################
-    # Get timestamp of most recent commit
-    # - this becomes the pubDate attribute of the feed
+###############################################################################
+#
+# Write RSS file
 
-    my $max_t = 0 ;
-
-    for my $c ( keys %commit )
-    {
-        if ( $c ne '' )
-        {
-            if ( $commit{$c}->{'t'} > $max_t )
-            {
-                $max_t      = $commit{$c}->{'t'} ;
-                $c_pubDate  = $commit{$c}->{'date'} ;
-            }
-        }
-    }
-
-    ########################################
-    # Get current date/time
-
-    $ENV{'TZ'} = 'UTC' ;
-    $c_lastBuildDate = strftime( '%a, %d %b %Y %H:%M:%S %z' , gmtime() ) ;
-
-    ########################################
-    # Write RSS file
-
-    print <<EOF ;
+print <<EOF ;
+<?xml version="1.0"?>
 <rss version="2.0">
   <channel>
-    <title>$c_title</title>
-    <link>$c_link</link>
-    <description>$c_description</description>
-    <pubDate>$c_pubDate</pubDate>
-    <lastBuildDate>$c_lastBuildDate</lastBuildDate>
+    <title>$title</title>
+    <link>$link</link>
+    <description>$description</description>
+    <pubDate>$pubDate</pubDate>
+    <lastBuildDate>$lastBuildDate</lastBuildDate>
 EOF
 
-    for my $c ( @cseq )
-    {
-        my $title       = sanitize( $commit{$c}->{'subject'} ) ;
-        my $author      = sanitize( $commit{$c}->{'author'}  ) ;
-        my $email       = sanitize( $commit{$c}->{'email'}   ) ;
-        my $pubDate     = sanitize( $commit{$c}->{'date'}    ) ;
-        my $body        = sanitize( $commit{$c}->{'body'}    ) ;
-        my $files       = sanitize( $commit{$c}->{'files'}   ) ;
+for my $c ( @cseq )
+{
+    my $title       = sanitize( $commit{$c}->{'subject'} ) ;
+    my $author      = sanitize( $commit{$c}->{'author'}  ) ;
+    my $email       = sanitize( $commit{$c}->{'email'}   ) ;
+    my $pubDate     = sanitize( $commit{$c}->{'date'}    ) ;
+    my $body        = sanitize( $commit{$c}->{'body'}    ) ;
+    my $files       = sanitize( $commit{$c}->{'files'}   ) ;
 
-        my $bf = ( $body ne '' ) ? "$body\n\n" : '' ;
-        $bf .= $files ;
+    my $bf = ( $body ne '' ) ? "$body\n\n" : '' ;
+    $bf .= $files ;
 
-        my $aline = "Author: $author"
-            . ( ( $email ne '' ) ? " &amp;lt;$email&amp;gt;" : '' ) ;
+    my $aline = "Author: $author"
+        . ( ( $email ne '' ) ? " &amp;lt;$email&amp;gt;" : '' ) ;
 
-        print <<EOF ;
+    print <<EOF ;
     <item>
       <guid>$c</guid>
       <pubDate>$pubDate</pubDate>
 EOF
 
-        if ( $commit_url ne '' )
-        {
-            my $url = sprintf( $commit_url , $c ) ;
-
-            print <<EOF ;
-      <link>$url</link>
-EOF
-        }
+    if ( $commit_url ne '' )
+    {
+        my $url = sprintf( $commit_url , $c ) ;
 
         print <<EOF ;
+      <link>$url</link>
+EOF
+    }
+
+    print <<EOF ;
       <title>$title</title>
       <author>$author</author>
-      <description><pre>Commit: $c
+      <description>
+        <pre>Commit: $c
 $aline
 Date: $pubDate
 
 $title
 
-$bf</pre></description>
+$bf</pre>
+      </description>
     </item>
 EOF
-    }
+}
 
-    print <<EOF ;
+print <<EOF ;
   </channel>
 </rss>
 EOF
-}
-
-
-###############################################################################
-###############################################################################
-###############################################################################
-
-getopts( 'hdb:n:' , \%opt ) ;
-$opt{'h'} && usage() ;
-$do_debug   = ( $opt{'d'} ? 1 : 0 ) ;
-$branch     = ( $opt{'b'} || '' ) ;
-$limit      = ( $opt{'n'} || 0  ) ;
-
-if ( $limit =~ m|\D| )
-{
-    die "ERROR: -n value must be a positive integer\n" ;
-}
-
-my $dir     = ( shift || '.' ) ;
-
-process_dir( $dir , $branch , $limit ) ;

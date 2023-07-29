@@ -7,3 +7,4 @@ description = Template for mdbook books
 image_url   = ""
 show_email  = user
 commit_url  = https://github.com/kg4zow/mdbook-template/commit/%s
+limit       = 0
