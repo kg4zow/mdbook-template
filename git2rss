@@ -1,5 +1,15 @@
 #!/usr/bin/env perl -w
-#
+# 
+# Notes::
+# If you see the error `/usr/bin/env: ‘perl -w’: No such file or directory
+# /usr/bin/env: use -[v]S to pass options in shebang lines`
+# that means there is an issue with how the Perl interpreter is being invoked 
+# in the `git2rss` script.
+# To fix this, simply  removes the `-w` flag from the shebang
+# i.e, replace the first line with `this:
+# !/usr/bin/env perl
+# and save and run the build again.
+# 
 # git2rss
 # John Simpson <jms1@jms1.net> 2023-07-25
 #
