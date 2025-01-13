@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # git2rss
 # John Simpson <jms1@jms1.net> 2023-07-25
@@ -10,11 +10,18 @@
 #   to specify a branch (make sure the directory has the correct branch
 #   checked out first)
 #
+# 2025-01-12 jms1 - removed `-w` from shebang line. Some 'env' programs don't
+#   support options on the shebang line without extra options, and other 'env'
+#   programs don't have those options. The "lowest common denominator" is to
+#   not have extra options at all, which in this case is okay because the
+#   `use warnings` pragma does the same thing as the `-w` option anyway.
+#   Thanks to Github user 'jake-47` for pointing this out.
+#
 ###############################################################################
 #
 # MIT License
 #
-# Copyright (c) 2023 John Simpson
+# Copyright (c) 2023-2025 John Simpson
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
