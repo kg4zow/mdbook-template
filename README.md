@@ -169,6 +169,17 @@ $ make push
 
 If you're totally finished, go back to "Window 1" where the `make serve` command is still running, and hit CTRL-C to stop it.
 
+# Troublshoot
+
+## pushd unavailable in shell
+If you see this error: 
+```
+/bin/sh: 8: pushd: not found
+```
+
+That means the `pushd` command is unavailable in your shell (e.g. dash). 
+In this case, in the Makefile, replace `pushd` and `popd` in the block at the end of the page with `cd` and `cd -` respectively.
+
 # Background
 
 This section will explain the customizations I'm making to how `mdbook` formats its output.

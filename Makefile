@@ -37,11 +37,7 @@ rsync: build
 #
 # NOTES:
 # - These commands work for me using bash. If you're using some other shell,
-#   you may need to adjust or remove this line.
-# - For example, if you see the error `/bin/sh: 8: pushd: not found`, that means
-#	the `pushd` command is not available in your shell. 
-#	In that case, replace in the block below `pushd` and `popd` with `cd` and `cd -` respectively
-# - The 'git worktree' commands require git version 2.0.7 or later.
+#   you may need to adjust or remove this line. See *Troubleshoot* in README.
 
 gh-pages: build
 	set -ex ; \
