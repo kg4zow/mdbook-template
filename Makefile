@@ -37,7 +37,7 @@ rsync: build
 #
 # NOTES:
 # - These commands work for me using bash. If you're using some other shell,
-#   you may need to adjust or remove this line. See *Troubleshoot* in README.
+#   You may need to adjust or remove this line. See *Troubleshoot* in README.
 
 gh-pages: build
 	set -ex ; \
