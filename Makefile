@@ -15,7 +15,7 @@ serve:
 #   push: rsync
 #   push: gh-pages
 
-push: "add/one/of/the/two/items/here"
+push:
 
 ########################################
 # IF you're going to publish the generated book to a web server, and you're
