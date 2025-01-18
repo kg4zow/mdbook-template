@@ -169,7 +169,7 @@ $ make push
 
 If you're totally finished, go back to "Window 1" where the `make serve` command is still running, and hit CTRL-C to stop it.
 
-# Troublshoot
+# Troubleshoot
 
 ## pushd unavailable in shell
 If you see this error: 
