@@ -4,8 +4,69 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Sat, 29 Jul 2023 13:15:19 -0400</pubDate>
-    <lastBuildDate>Sat, 29 Jul 2023 17:16:23 +0000</lastBuildDate>
+    <pubDate>Fri, 7 Mar 2025 03:03:24 -0500</pubDate>
+    <lastBuildDate>Fri, 07 Mar 2025 08:04:15 +0000</lastBuildDate>
+    <item>
+      <guid>bc8b9cf8082186102b969f2cb3ee414366666a83</guid>
+      <pubDate>Fri, 7 Mar 2025 03:03:24 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/bc8b9cf8082186102b969f2cb3ee414366666a83</link>
+      <title>Update for mdbook v0.4.41, improved README</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: bc8b9cf8082186102b969f2cb3ee414366666a83
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Fri, 7 Mar 2025 03:03:24 -0500
+
+Update for mdbook v0.4.41, improved README
+
+A	.editorconfig
+M	.gitignore
+M	Makefile
+M	README.md
+M	book.toml
+M	src/introduction.md
+A	theme-template/custom.txt
+R084	theme/index-template.hbs	theme-template/index.hbs
+A	theme-template/toc.html.hbs
+A	theme-template/toc.js.hbs
+M	version-commit</pre>
+      </description>
+    </item>
+    <item>
+      <guid>b643870583f5791cc42260b7f80056d470784935</guid>
+      <pubDate>Sun, 12 Jan 2025 21:29:31 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/b643870583f5791cc42260b7f80056d470784935</link>
+      <title>git2rss: removed `-w` from shebang line, thanks @jake-47</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: b643870583f5791cc42260b7f80056d470784935
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Sun, 12 Jan 2025 21:29:31 -0500
+
+git2rss: removed `-w` from shebang line, thanks @jake-47
+
+Note that https://github.com/kg4zow/git2rss is the primary source for
+this script. This commit just *copies* the update I did there.
+
+M	git2rss</pre>
+      </description>
+    </item>
+    <item>
+      <guid>a0b31caa5f6f9f1d1e77e686d97401d0fb3e4c78</guid>
+      <pubDate>Mon, 9 Oct 2023 07:42:53 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/a0b31caa5f6f9f1d1e77e686d97401d0fb3e4c78</link>
+      <title>Update default theme to work with mdBook v0.4.35</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: a0b31caa5f6f9f1d1e77e686d97401d0fb3e4c78
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 9 Oct 2023 07:42:53 -0400
+
+Update default theme to work with mdBook v0.4.35
+
+M	theme/index-template.hbs</pre>
+      </description>
+    </item>
     <item>
       <guid>c8e2d4a1826f86b74ae9d46cfd1dc1876ccc59fb</guid>
       <pubDate>Sat, 29 Jul 2023 13:15:19 -0400</pubDate>
