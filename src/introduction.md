@@ -12,7 +12,7 @@ This is a newly created "book" using [mdbook](https://rust-lang.github.io/mdBook
 
 [`https://github.com/kg4zow/mdbook-template/`](https://github.com/kg4zow/mdbook-template/) contains more detail about how to use this repo.
 
-The `theme/index-template.hbs` file also includes a *commented-out* example of how you might add a link to a page "outside" the book, at the top of the Table of Contents in the navigation panel. This could be useful if you're writing a set of books and want each one to have a link back to a common "list of books" index page.
+The `theme-template/toc.html.hbs` and `theme-template/toc.js.hbs` files also include *commented-out* examples of how you might add a link to a page "outside" the book, at the top of the Table of Contents in the navigation panel. This could be useful if you're writing a set of books and want each one to have a link back to a common "list of books" index page.
 
 Below this are a few example section headers, so you can see what they look like.
 

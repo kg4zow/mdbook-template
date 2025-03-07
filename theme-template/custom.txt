@@ -1,0 +1,107 @@
+This file isn't used in the process of building the book, this is just where
+I keep the blocks I add to the 'theme-template/' files whenever I update them
+from the mdbook source code.
+
+https://github.com/rust-lang/mdBook/tree/master/src/theme/
+
+-------------------------------------------------------------------------------
+
+Original *.hbs files were last copied from mdbook's source 2025-03-07, from
+
+$ git describe --tags
+v0.4.43-12-g629c2ad
+
+-------------------------------------------------------------------------------
+
+$ cd ~/git/
+$ diff -ru rust-lang/mdBook/src/theme/ kg4zow/mdbook-template/theme-template/ | grep -v ^Only
+diff -ru rust-lang/mdBook/src/theme/index.hbs kg4zow/mdbook-template/theme-template/index.hbs
+--- rust-lang/mdBook/src/theme/index.hbs	2024-12-23 07:57:16
++++ kg4zow/mdbook-template/theme-template/index.hbs	2025-01-21 07:45:06
+@@ -192,6 +192,19 @@
+                 <div id="content" class="content">
+                     <main>
+                         {{{ content }}}
++
++<!-- Start version-commit content below every page -->
++                        <hr/>
++                        <div class="version-commit-div" style="float: right">
++                            Generated
++                            <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
++                        </div>
++                        <div class="version-commit-div">
++                            <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span>
++                            <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
++                        </div>
++<!-- End version-commit content below every page -->
++
+                     </main>
+
+                     <nav class="nav-wrapper" aria-label="Page navigation">
+diff -ru rust-lang/mdBook/src/theme/toc.html.hbs kg4zow/mdbook-template/theme-template/toc.html.hbs
+--- rust-lang/mdBook/src/theme/toc.html.hbs	2024-12-23 07:57:16
++++ kg4zow/mdbook-template/theme-template/toc.html.hbs	2025-03-05 09:09:13
+@@ -38,6 +38,28 @@
+         {{/each}}
+     </head>
+     <body class="sidebar-iframe-inner">
++
++<!-- Start extra link above the ToC -->
++<!--
++                &#x2192; <a class='part-title' href='https://github.com/kg4zow/mdbook-template/'>GitHub Repo</a>
++                <hr/>
++-->
++<!-- End extra link above the ToC -->
++
+         {{#toc}}{{/toc}}
++
++<!-- Start version-commit content below ToC (non-js) -->
++                <hr/>
++                <div class="part-title">Version</div>
++                <div id="commit" class='version-commit-div'>
++                    <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
++                    <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
++                </div>
++                <div class="part-title">Generated</div>
++                <div id="generated" class='version-commit-div'>
++                    <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
++                </div>
++<!-- End version-commit content below ToC -->
++
+     </body>
+ </html>
+diff -ru rust-lang/mdBook/src/theme/toc.js.hbs kg4zow/mdbook-template/theme-template/toc.js.hbs
+--- rust-lang/mdBook/src/theme/toc.js.hbs	2025-01-21 07:57:13
++++ kg4zow/mdbook-template/theme-template/toc.js.hbs	2025-03-07 02:34:54
+@@ -8,7 +8,30 @@
+         super();
+     }
+     connectedCallback() {
+-        this.innerHTML = '{{#toc}}{{/toc}}';
++        this.innerHTML = `
++<!-- Start extra link above the ToC -->
++<!--
++                &#x2192; <a class='part-title' href='https://github.com/kg4zow/mdbook-template/'>GitHub Repo</a>
++                <hr/>
++-->
++<!-- End extra link above the ToC -->
++
++{{#toc}}{{/toc}}
++
++<!-- Start version-commit content below ToC (js) -->
++                <hr/>
++                <div class="part-title">Version</div>
++                <div id="commit" class="version-commit-div">
++                    <span class="version-commit-hash"><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
++                    <span class="version-commit-time"><tt>@VERSION_COMMIT_TIME@</tt></span>
++                </div>
++                <div class="part-title">Generated</div>
++                <div id="generated" class="version-commit-div">
++                    <span class="version-commit-now"><tt>@VERSION_COMMIT_NOW@</tt></span>
++                </div>
++<!-- End version-commit content below ToC -->
++
++`;
+         // Set the current, active page, and reveal it if it's hidden
+         let current_page = document.location.href.toString().split("#")[0];
+         if (current_page.endsWith("/")) {

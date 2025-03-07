@@ -3,17 +3,19 @@
 # * template https://github.com/kg4zow/mdbook-template/
 
 [book]
-authors             = ["John Simpson"]
-language            = "en"
-multilingual        = false
-src                 = "src"
-title               = "Template"
+authors                 = ["John Simpson"]
+language                = "en"
+multilingual            = false
+src                     = "src"
+title                   = "Template"
 
 [output.html]
-additional-css      = [ "section-lines.css" , "version-commit.css" ]
-curly-quotes        = false
-git-repository-url  = "https://github.com/kg4zow/mdbook-template"
-no-section-label    = true
+additional-css          = [ "section-lines.css" , "version-commit.css" ]
+curly-quotes            = false
+git-repository-url      = "https://github.com/kg4zow/mdbook-template"
+no-section-label        = true
+default-theme           = "rust"
+preferred-dark-theme    = "ayu"
 
 [preprocessor.version-commit]
 renderers           = [ "html" ]

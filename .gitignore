@@ -1,4 +1,5 @@
 .DS_Store
 ._*
 /book/
-/theme/index.hbs
+/theme/*.hbs
+/debug.txt

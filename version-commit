@@ -1,21 +1,22 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # version-commit
 # John Simpson <jms1@jms1.net> 2022-04-01
-# Last updated 2023-07-03
+# Last updated 2025-02-18
 #
 # This script does two things:
 #
 # - Read a JSON structure from STDIN. This will be a list with two elements.
 #   Print the contents of the second element, without any changes.
-# - Read 'theme/index-template.hbs' and use information about the current
-#   state of the git working directory to write the 'theme/index.hbs' file.
+# - Read customized theme files from 'theme-tmeplate/' and use information
+#   about the current state of the git working directory to write files in
+#   the 'theme/' directory. (This is needed for mdbook 0.4.41 and later.)
 #
 ###############################################################################
 #
 # MIT License
 #
-# Copyright (c) 2022 John Simpson
+# Copyright (c) 2022-2025 John Simpson
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -39,11 +40,11 @@
 
 require 5.005 ;
 use strict ;
+use warnings ;
 
 use JSON ;
 
-my $infile  = 'theme/index-template.hbs' ;
-my $outfile = 'theme/index.hbs' ;
+my $do_debug = 0 ;
 
 ###############################################################################
 #
@@ -68,6 +69,22 @@ sub runit($)
 }
 
 ###############################################################################
+#
+# debug function
+
+sub debug(@)
+{
+    if ( $do_debug )
+    {
+        if ( open ( DEBUG , '>>debug.txt' ) )
+        {
+            print DEBUG @_ ;
+            close DEBUG ;
+        }
+    }
+}
+
+###############################################################################
 ###############################################################################
 ###############################################################################
 #
@@ -82,7 +99,7 @@ print encode_json( $j->[1] ) ;
 
 ###############################################################################
 #
-# (2) Create the theme/index.hbs file.
+# (2) Create theme/ files from theme-template/ files.
 
 ########################################
 # Build the values we'll need.
@@ -97,27 +114,75 @@ my @d = gmtime() ;
 my $now = sprintf( '%04d-%02d-%02d %02d:%02d:%02d +0000' ,
     $d[5]+1900 , $d[4]+1 , $d[3] , $d[2] , $d[1] , $d[0] ) ;
 
-########################################
-# Read 'theme/index-template.hbs' into memory.
+############################################################
+# Loop through 'theme-template/*.hbs' files, substituting the values above
+# wherever the substitution tags appear, and writing the results to files
+# in the 'theme/' directory with the same filenames.
+#
+# Every new or updated file in the 'theme/' directory triggers a rebuild,
+# which causes 'mdbook serve' to run this script again. This ends up running
+# this script again, which causes an endless loop of rebuilds.
+#
+# In order to avoid this, I'm comparing the last modified time of each input
+# file against the last modified time of the output file in the 'theme/'
+# directory, and only rebuilding the file in 'theme/' when needed. Note that
+# timestamps are limited to one-second resolution, so it's possible for the
+# two files' timestamps to be identical for other reasons. At first I was
+# using '<=' to compare the timestamps, but this caused some updates to be
+# processed multiple times until the current time crossed a one-second
+# boundary, so I decided to use '<' instead.
+#
+# A side-effect of this is that, while using 'make serve' to work on the
+# content of the book, the timestamps shown in the ToC can be different than
+# the timestamps at the bottom of each main page. This is why 'Makefile'
+# deletes 'theme/*.hbs` before running each 'mdbook' command, to force this
+# script to generate these files using the same timestamps used at the bottom
+# of each page.
 
-my $html = '' ;
+for my $infile ( glob 'theme-template/*.hbs' )
+{
+    my $outfile = $infile ;
+    $outfile =~ s|^theme-template/|theme/| ;
 
-open( I , '<' , $infile )
-    or die "ERROR: cannot read '$infile': $!\n" ;
-{ local $/ = undef ; $html = <I> ; }
-close I ;
+    ########################################
+    # Figure out if we need to rebuild this file or not.
 
-########################################
-# Substitute the values into the HTML.
+    my $mtime_infile  =   (stat( $infile  ))[9]         ;
+    my $mtime_outfile = ( (stat( $outfile ))[9] || -1 ) ;
 
-$html =~ s|\@VERSION_COMMIT_HASH\@|$commit_hash|gs ;
-$html =~ s|\@VERSION_COMMIT_TIME\@|$commit_time|gs ;
-$html =~ s|\@VERSION_COMMIT_NOW\@|$now|gs ;
+    if ( $mtime_infile < $mtime_outfile )
+    {
+        debug "infile '$infile' ($mtime_infile) outfile $outfile' ($mtime_outfile) SKIP\n" ;
 
-########################################
-# Write the output file.
+        next ;
+    }
+    else
+    {
+        debug "infile '$infile' ($mtime_infile) outfile '$outfile' ($mtime_outfile) PROCESS\n" ;
+    }
 
-open ( O , '>' , $outfile )
-    or die "ERROR: cannot write '$outfile': $!\n" ;
-print O $html ;
-close O ;
+    ########################################
+    # Read the input file into memory.
+
+    my $html = '' ;
+
+    open( I , '<' , $infile )
+        or die "ERROR: cannot read '$infile': $!\n" ;
+    { local $/ = undef ; $html = <I> ; }
+    close I ;
+
+    ########################################
+    # Substitute the values into the HTML.
+
+    $html =~ s|\@VERSION_COMMIT_HASH\@|$commit_hash|gs ;
+    $html =~ s|\@VERSION_COMMIT_TIME\@|$commit_time|gs ;
+    $html =~ s|\@VERSION_COMMIT_NOW\@|$now|gs ;
+
+    ########################################
+    # Write the output file.
+
+    open ( O , '>' , $outfile )
+        or die "ERROR: cannot write '$outfile': $!\n" ;
+    print O $html ;
+    close O ;
+}
