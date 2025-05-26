@@ -1,0 +1,538 @@
+#!/usr/bin/env perl
+#
+# mdbook-fix-templates
+# jms1 2022-04-05
+#
+# Copy or update mdbook template files for "books"
+#
+# Last update: 2025-05-25 jms1
+# - make sure mdbook source is on the correct version
+# - added license statement (preparing to release the script publicly)
+#
+###############################################################################
+#
+# MIT License
+#
+# Copyright (c) 2022-2025 John Simpson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+###############################################################################
+
+require 5.005 ;
+use strict ;
+use warnings ;
+
+use Cwd qw 'abs_path cwd' ;
+use Getopt::Std ;
+
+my $VERSION     = 'v0.2.0 2025-05-25' ;
+
+my @files       = qw ( index.hbs toc.html.hbs toc.js.hbs ) ;
+my $repo_def    = "$ENV{'HOME'}/git/rust-lang/mdBook" ;
+my $repo_url    = 'https://github.com/rust-lang/mdBook' ;
+
+my %opt         = () ;      # getopts
+
+my $src_dir     = '' ;      # directory with original files from mdbook source
+my $repo_dir    = '' ;      # directory where mdBook is cloned
+my $above_toc   = '' ;      # HTML fragment for above the ToC
+my $below_toc   = '' ;      # HTML fragment for below the ToC
+my $below_page  = '' ;      # HTML fragment for below the main page
+my $mdbook_ver  = '' ;      # mdbook version we're running
+
+###############################################################################
+#
+# Coloured line functions
+
+sub redline(@)
+{
+    printf "\e[0;1;37;41m%s\e[0K\e[0m\n" , join( ' ' , @_ ) ;
+}
+
+sub yellowline(@)
+{
+    printf "\e[0;30;43m%s\e[K\e[0m\n" , join( ' ' , @_ ) ;
+}
+
+sub blueline(@)
+{
+    printf "\e[0;1;37;44m%s\e[0K\e[0m\n" , join( ' ' , @_ ) ;
+}
+
+sub fail(@) {
+    redline( @_ ) ;
+    exit 1 ;
+}
+
+###############################################################################
+#
+# Usage
+
+sub usage(;$) {
+    my $msg = ( shift || '' ) ;
+
+    print <<EOF ;
+$0 [OPTIONS]
+
+Copy or update mdbook templates files.
+
+This script requires that you have mdbook's source code repo cloned on your
+workstation.
+
+    \$ mkdir -p ~/git/rust-lang
+    \$ cd ~/git/rust-lang/
+    \$ git clone https://github.com/rust-lang/mdBook.git
+
+If the repo is cloned in some other directory, you can create a config file
+on your workstation to tell the script where it is.
+
+    \$ mkdir -p ~/.config/mdbook-fix-templates
+    \$ cd ~/.config/mdbook-fix-templates
+    \$ echo '/path/to/rust-lang/mdBook' > repo_dir.txt
+
+In addition, the repo should be checked out to the same tag as the mdbook
+version you're using.
+
+    \$ cd ~/git/rust-lang/mdBook/
+    \$ git fetch -p
+    \$ git checkout "\$( mdbook --version | awk '{ print \$2 }' )"
+
+This script must be run in a book's \"theme-template\" directory.
+
+-r ___  Specify the directory where the mdBook source code repo is cloned.
+        This option overrides the directory set in the repo_dir.txt file.
+        If this option is not used and the config file is not present, the
+        script will default to "\$HOME/git/rust-lang/mdBook".
+
+-h      Show this help message.
+
+mdbook-fix-templates $VERSION
+
+EOF
+
+    if ( $msg ne '' )
+    {
+        fail( $msg ) ;
+    }
+
+    exit 0 ;
+}
+
+###############################################################################
+#
+# If a file exists, rename it to the same name with ".old" at the end
+
+sub rename_file_old($)
+{
+    my $file = shift ;
+
+    if ( -f $file )
+    {
+        print "renaming    $file to $file.old\n" ;
+
+        rename( $file , "$file.old" )
+            or fail( "ERROR: can't rename \"$file\" to \"$file.old\": $!\n" ) ;
+    }
+}
+
+###############################################################################
+#
+# Read a file's contents into a variable. If the file doesn't exist, return
+# an empty string.
+
+sub readfile_maybe($)
+{
+    my $file = shift ;
+    my $rv   = '' ;
+
+    if ( -f $file )
+    {
+        open( my $fh , '<' , $file )
+            or fail( "ERROR: can't read \"$file\": $!\n" ) ;
+
+        local $/ ;
+        $rv = <$fh> ;
+
+        close $fh ;
+    }
+
+    return $rv ;
+}
+
+###############################################################################
+#
+# Get the output of a command
+
+sub command_output($)
+{
+    my $cmd = shift ;
+
+    open( my $fh , "$cmd |" )
+        or fail( "ERROR: '$cmd' failed: $!\n" ) ;
+
+    local $/ ;
+    my $text = <$fh> ;
+    close $fh ;
+
+    return $text ;
+}
+
+###############################################################################
+#
+# Update 'index.hbs' - template for main content area
+# - last updated 2025-05-24 for mdbook v0.4.50
+
+sub update_index_hbs()
+{
+    rename_file_old( 'index.hbs' ) ;
+
+    print "writing     index.hbs\n" ;
+
+    open( my $i , '<' , "$src_dir/index.hbs" )
+        or fail( "ERROR: can't read '$src_dir/index.hbs': $!\n" ) ;
+    open( my $o , '>' , "index.hbs" )
+        or fail( "ERROR: can't write 'index.hbs': $!\n" ) ;
+
+    while( my $line = <$i> )
+    {
+        print $o $line ;
+
+        if ( $line =~ m|\{\{\{\s*content\s*\}\}\}| )
+        {
+            print $o $below_page ;
+        }
+    }
+
+    print $o "<!-- mdbook-fix-templates $VERSION - mdbook $mdbook_ver -->\n" ;
+
+    close $o ;
+    close $i ;
+}
+
+###############################################################################
+#
+# Update 'toc.html.hbs' - template for ToC without javascript
+# - last updated 2025-05-24 for mdbook v0.4.50
+
+sub update_toc_html_hbs()
+{
+    rename_file_old( 'toc.html.hbs' ) ;
+
+    print "writing     toc.html.hbs\n" ;
+
+    open( my $i , '<' , "$src_dir/toc.html.hbs" )
+        or fail( "ERROR: can't read '$src_dir/toc.html.hbs': $!\n" ) ;
+    open( my $o , '>' , "toc.html.hbs" )
+        or fail( "ERROR: can't write 'toc.html.hbs': $!\n" ) ;
+
+    while( my $line = <$i> )
+    {
+        if ( $line =~ m|\{\{\s*#toc\s*\}\}\s*\{\{\s*/toc\s*\}\}| )
+        {
+            print $o $above_toc , $line , $below_toc ;
+        }
+        else
+        {
+            print $o $line ;
+        }
+    }
+
+    print $o "<!-- mdbook-fix-templates $VERSION - mdbook $mdbook_ver -->\n" ;
+
+    close $o ;
+    close $i ;
+}
+
+###############################################################################
+#
+# Update 'toc.js.hbs' - template for ToC with javascript
+# - last updated 2025-05-24 for mdbook v0.4.50
+
+sub update_toc_js_hbs()
+{
+    rename_file_old( 'toc.js.hbs' ) ;
+
+    print "writing     toc.js.hbs\n" ;
+
+    open( my $i , '<' , "$src_dir/toc.js.hbs" )
+        or fail( "ERROR: can't read '$src_dir/toc.js.hbs': $!\n" ) ;
+    open( my $o , '>' , "toc.js.hbs" )
+        or fail( "ERROR: can't write 'toc.js.hbs': $!\n" ) ;
+
+    while( my $line = <$i> )
+    {
+        if ( $line =~ m|^(.*?)(\{\{\s*#toc\s*\}\}\s*\{\{\s*/toc\s*\}\})(.*?)$| )
+        {
+            my ( $before , $tags , $after ) = ( $1 , $2 , $3 ) ;
+
+            ########################################
+            # the javascript string where the items are being inserted must
+            # be a multi-line string (delimited by backticks)
+
+            $before =~ s|['"]$|`| ;
+            $after  =~ s|^['"]|`| ;
+
+            print $o "$before$above_toc$tags$below_toc$after\n" ;
+        }
+        else
+        {
+            print $o $line ;
+        }
+    }
+
+    print $o "\n// mdbook-fix-templates $VERSION - mdbook $mdbook_ver\n" ;
+
+    close $o ;
+    close $i ;
+}
+
+###############################################################################
+#
+# Get the URL of a repo's "origin" remote
+# - this may not work correctly if the "origin" remote has multiple URLs
+
+sub get_repo_origin($)
+{
+    my $dir = shift ;
+    my $url = '' ;
+
+    my $repo_config = readfile_maybe( "$dir/.git/config" ) ;
+
+    my $in_remote_origin = 0 ;
+    my @lines = split( /\n/ , $repo_config ) ;
+    while ( my $line = shift @lines )
+    {
+        if ( $line =~ m|^\[(.+?)\]| )
+        {
+            my $x = $1 ;
+            $in_remote_origin = ( $x eq 'remote "origin"' ) ;
+        }
+        elsif ( $in_remote_origin )
+        {
+            if ( $line =~ m|url\s*\=\s*(\S+)| )
+            {
+                $url = $1 ;
+            }
+        }
+    }
+
+    return $url ;
+}
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+getopts( 'hr:' , \%opt ) ;
+$opt{'h'} && usage() ;
+$repo_dir = ( $opt{'r'} || $repo_dir ) ;
+
+########################################
+# Make sure the script is running in a book's "theme-template" directory.
+
+if ( abs_path( cwd() ) !~ m|/theme-template$| )
+{
+    usage( "ERROR: run this script in a book's \"theme-template\" directory\n" ) ;
+}
+
+########################################
+# Figure out what version of mdbook we're running
+
+$mdbook_ver = command_output( 'mdbook --version' ) ;
+chomp $mdbook_ver ;
+$mdbook_ver =~ s|^mdbook || ;
+
+if ( $mdbook_ver eq '' )
+{
+    fail "ERROR: 'mdbook --version' failed: $!" ;
+}
+
+print "mdbook      $mdbook_ver\n" ;
+
+########################################
+# Figure out where $repo_dir is
+
+if ( $repo_dir eq '' )
+{
+    my $cfg_file = $ENV{'HOME'} . '/.config/mdbook-fix-templates/repo_dir.txt' ;
+    if ( -f $cfg_file )
+    {
+        if ( open( my $fh , '<' , $cfg_file ) )
+        {
+            while ( my $line = <$fh> )
+            {
+                chomp $line ;
+                $repo_dir = $line ;
+            }
+            close $fh ;
+        }
+        else
+        {
+            fail "ERROR: can't read \"$cfg_file\": $!" ;
+        }
+    }
+}
+
+if ( $repo_dir eq '' )
+{
+    $repo_dir = $ENV{'HOME'} . '/git/rust-lang/mdBook' ;
+}
+
+$repo_dir =~ s|/$|| ;
+
+print "repo_dir    $repo_dir\n" ;
+
+########################################
+# Make sure $repo_dir is a git working directory
+
+unless ( -d "$repo_dir/.git" )
+{
+    redline "ERROR: '$repo_dir' is not the root of a git repo" ;
+
+    print <<EOF ;
+
+If you're using the '-r' option, its value needs to point to the root of the
+repo, not a directory *within* the repo.
+
+If you haven't cloned the mdbook source code on this machine yet, do this:
+
+    mkdir -p ~/git/rust-lang
+    cd ~/git/rust-lang/
+    git clone $repo_url
+    cd mdBook/
+    git checkout $mdbook_ver
+
+If you plan to use the '-r' option, adjust these commands accordingly.
+
+EOF
+
+    exit 1 ;
+}
+
+########################################
+# Make sure $repo_dir is cloned from the correct repo
+
+my $origin = get_repo_origin( $repo_dir ) ;
+
+if ( $origin ne $repo_url )
+{
+    redline "ERROR: '$repo_dir' was not cloned from $repo_url\n" ;
+
+    print <<EOF ;
+
+If you're using the '-r' option, its value needs to point to the root of the
+repo, not a directory *within* the repo.
+
+If you haven't cloned the mdbook source code on this machine yet, do this:
+
+    mkdir -p ~/git/rust-lang
+    cd ~/git/rust-lang/
+    git clone $repo_url
+    cd mdBook/
+    git checkout $mdbook_ver
+
+If you plan to use the '-r' option, adjust these commands accordingly.
+
+EOF
+
+    exit 1 ;
+}
+
+########################################
+# Make sure $repo_dir is checked out to the same version
+# as the 'mdbook' executable
+
+my $ver_ref = command_output( "( cd '$repo_dir' ; git rev-parse '$mdbook_ver' )" ) ;
+chomp $ver_ref ;
+
+if ( $ver_ref eq '' )
+{
+    redline "ERROR: '$repo_dir' has no '$mdbook_ver' tag" ;
+    print <<EOF ;
+
+Your copy of the repo may be outdated. To fix this:
+
+    cd $repo_dir
+    git fetch -p
+    git checkout $mdbook_ver
+
+EOF
+
+    exit 1 ;
+}
+
+
+my $cur_ref = command_output( "( cd '$repo_dir' ; git rev-parse HEAD )" ) ;
+chomp $cur_ref ;
+
+printf "%10s: %s\n" , $mdbook_ver   , $ver_ref ;
+printf "%10s: %s\n" , 'HEAD'        , $cur_ref ;
+
+if ( $cur_ref ne $ver_ref )
+{
+    redline "ERROR: '$repo_dir' is not on the correct version" ;
+
+    print <<EOF ;
+
+To fix this:
+
+    cd $repo_dir
+    git fetch -p
+    git checkout $mdbook_ver
+
+EOF
+
+    exit 1 ;
+}
+
+########################################
+# Make sure the source files exist
+
+$repo_dir =~ s|/$|| ;
+
+my $fail = 0 ;
+for my $f ( @files )
+{
+    print "checking    $repo_dir/src/front-end/templates/$f\n" ;
+
+    unless ( -f "$repo_dir/src/front-end/templates/$f" )
+    {
+        $fail = 1 ;
+        redline "ERROR: '$repo_dir/src/front-end/templates/$f' does not exist" ;
+    }
+}
+$fail && exit 1 ;
+
+$src_dir = "$repo_dir/src/front-end/templates" ;
+
+###############################################################################
+#
+# Read HTML fragment files
+
+$above_toc  = readfile_maybe( 'above-toc.html' ) ;
+$below_toc  = readfile_maybe( 'below-toc.html' ) ;
+$below_page = readfile_maybe( 'below-page.html' ) ;
+
+########################################
+# Copy/edit files
+
+update_index_hbs() ;
+update_toc_html_hbs() ;
+update_toc_js_hbs() ;
