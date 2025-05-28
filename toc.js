@@ -9,31 +9,28 @@ class MDBookSidebarScrollbox extends HTMLElement {
     }
     connectedCallback() {
         this.innerHTML = `
-<!-- Start extra link above the ToC -->
-<!--
-                &#x2192; <a class='part-title' href='https://github.com/kg4zow/mdbook-template/'>GitHub Repo</a>
-                <hr/>
--->
-<!-- End extra link above the ToC -->
+<!-- Start content above ToC -->
+    <a href='https://github.com/kg4zow/mdbook-template/'>Github Repo</a>
+<!-- End content above ToC -->
 
 <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded "><a href="chapter_1.html">Chapter 1</a></li></ol>
-
-<!-- Start version-commit content below ToC (js) -->
-                <hr/>
-                <div class="part-title">Version</div>
-                <div id="commit" class="version-commit-div">
-                    <span class="version-commit-hash"><tt>initial-22-gbc8b9cf</tt></span><br/>
-                    <span class="version-commit-time"><tt>2025-03-07 08:03:24 +0000</tt></span>
-                </div>
-                <div class="part-title">Generated</div>
-                <div id="generated" class="version-commit-div">
-                    <span class="version-commit-now"><tt>2025-03-07 08:04:15 +0000</tt></span>
-                </div>
+<!-- Start version-commit content below ToC -->
+    <hr/>
+    <div class="part-title">Version</div>
+    <div id="commit" class='version-commit-div'>
+        <span class='version-commit-hash'><tt>initial-24-g20ad74f</tt></span><br/>
+        <span class='version-commit-time'><tt>2025-05-28 00:37:10 +0000</tt></span>
+    </div>
+    <div class="part-title">Generated</div>
+    <div id="generated" class='version-commit-div'>
+        <span class='version-commit-now'><tt>2025-05-28 00:37:57 +0000</tt></span>
+    </div>
 <!-- End version-commit content below ToC -->
+
 
 `;
         // Set the current, active page, and reveal it if it's hidden
-        let current_page = document.location.href.toString().split("#")[0];
+        let current_page = document.location.href.toString().split("#")[0].split("?")[0];
         if (current_page.endsWith("/")) {
             current_page += "index.html";
         }
@@ -91,3 +88,5 @@ class MDBookSidebarScrollbox extends HTMLElement {
     }
 }
 window.customElements.define("mdbook-sidebar-scrollbox", MDBookSidebarScrollbox);
+
+// mdbook-fix-templates v0.2.0 2025-05-25 - mdbook v0.4.51

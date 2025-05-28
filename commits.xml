@@ -4,8 +4,51 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Fri, 7 Mar 2025 03:03:24 -0500</pubDate>
-    <lastBuildDate>Fri, 07 Mar 2025 08:04:15 +0000</lastBuildDate>
+    <pubDate>Tue, 27 May 2025 20:37:10 -0400</pubDate>
+    <lastBuildDate>Wed, 28 May 2025 00:37:58 +0000</lastBuildDate>
+    <item>
+      <guid>20ad74f04b97d5b47ee01077fdd21b193ae735dc</guid>
+      <pubDate>Tue, 27 May 2025 20:37:10 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/20ad74f04b97d5b47ee01077fdd21b193ae735dc</link>
+      <title>Update templates for mdbook v0.4.51 (no real change)</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 20ad74f04b97d5b47ee01077fdd21b193ae735dc
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 27 May 2025 20:37:10 -0400
+
+Update templates for mdbook v0.4.51 (no real change)
+
+M	theme-template/index.hbs
+M	theme-template/toc.html.hbs
+M	theme-template/toc.js.hbs</pre>
+      </description>
+    </item>
+    <item>
+      <guid>0a6ac3801069e2c52173f507e770858bf762e3aa</guid>
+      <pubDate>Mon, 26 May 2025 09:37:09 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/0a6ac3801069e2c52173f507e770858bf762e3aa</link>
+      <title>Added `mdbook-fix-templates` script, updated templates for v0.4.50</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 0a6ac3801069e2c52173f507e770858bf762e3aa
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Mon, 26 May 2025 09:37:09 -0400
+
+Added `mdbook-fix-templates` script, updated templates for v0.4.50
+
+A	theme-template/.gitignore
+A	theme-template/README.md
+A	theme-template/above-toc.html
+A	theme-template/below-page.html
+A	theme-template/below-toc.html
+D	theme-template/custom.txt
+M	theme-template/index.hbs
+A	theme-template/mdbook-fix-templates
+M	theme-template/toc.html.hbs
+M	theme-template/toc.js.hbs</pre>
+      </description>
+    </item>
     <item>
       <guid>bc8b9cf8082186102b969f2cb3ee414366666a83</guid>
       <pubDate>Fri, 7 Mar 2025 03:03:24 -0500</pubDate>
