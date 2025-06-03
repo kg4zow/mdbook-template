@@ -48,6 +48,8 @@ gh-pages: build
 	set -ex ; \
 	WORK="$$( mktemp -d )" ; \
 	VER="$$( git describe --always --tags --dirty )" ; \
+	git branch -D gh-pages || true ; \
+	git branch gh-pages origin/gh-pages ; \
 	git worktree add --force "$$WORK" gh-pages ; \
 	rm -rf "$$WORK"/* ; \
 	rsync -av book/ "$$WORK"/ ; \
