@@ -4,8 +4,31 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Tue, 27 May 2025 20:37:10 -0400</pubDate>
-    <lastBuildDate>Wed, 28 May 2025 00:37:58 +0000</lastBuildDate>
+    <pubDate>Tue, 3 Jun 2025 09:55:39 -0400</pubDate>
+    <lastBuildDate>Tue, 03 Jun 2025 13:58:10 +0000</lastBuildDate>
+    <item>
+      <guid>487094696e565ce87b25c7cd52bf7a622c65ec9c</guid>
+      <pubDate>Tue, 3 Jun 2025 09:55:39 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/487094696e565ce87b25c7cd52bf7a622c65ec9c</link>
+      <title>Updated `Makefile` for git 2.49.0</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 487094696e565ce87b25c7cd52bf7a622c65ec9c
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 3 Jun 2025 09:55:39 -0400
+
+Updated `Makefile` for git 2.49.0
+
+A local `gh-pages` branch must exist in order to create the worktree.
+
+Also created a placeholder file to ensure that the `theme/` directory
+exists in the repo, and therefore exists when the repo is cloned to a
+new machine.
+
+M	Makefile
+A	theme/.placeholder</pre>
+      </description>
+    </item>
     <item>
       <guid>20ad74f04b97d5b47ee01077fdd21b193ae735dc</guid>
       <pubDate>Tue, 27 May 2025 20:37:10 -0400</pubDate>
