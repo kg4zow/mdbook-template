@@ -4,8 +4,41 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Sun, 3 Aug 2025 17:47:33 -0400</pubDate>
-    <lastBuildDate>Sun, 03 Aug 2025 21:48:37 +0000</lastBuildDate>
+    <pubDate>Sun, 3 Aug 2025 17:56:48 -0400</pubDate>
+    <lastBuildDate>Sun, 03 Aug 2025 21:57:17 +0000</lastBuildDate>
+    <item>
+      <guid>e5df9ea0ced29946b154e78e529104225a1c13e0</guid>
+      <pubDate>Sun, 3 Aug 2025 17:56:48 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/e5df9ea0ced29946b154e78e529104225a1c13e0</link>
+      <title>More typos, added MIT license statement to new `version-commit` script</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: e5df9ea0ced29946b154e78e529104225a1c13e0
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Sun, 3 Aug 2025 17:56:48 -0400
+
+More typos, added MIT license statement to new `version-commit` script
+
+M	README.md
+M	version-commit</pre>
+      </description>
+    </item>
+    <item>
+      <guid>d323ce281c5ad5d8fb657b8baed3ec6151c6aba6</guid>
+      <pubDate>Sun, 3 Aug 2025 17:49:49 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/d323ce281c5ad5d8fb657b8baed3ec6151c6aba6</link>
+      <title>typo</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: d323ce281c5ad5d8fb657b8baed3ec6151c6aba6
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Sun, 3 Aug 2025 17:49:49 -0400
+
+typo
+
+M	README.md</pre>
+      </description>
+    </item>
     <item>
       <guid>1532aa432069df56ae226cc8e8c0b935f6cda0c0</guid>
       <pubDate>Sun, 3 Aug 2025 17:47:33 -0400</pubDate>

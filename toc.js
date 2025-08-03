@@ -18,12 +18,12 @@ class MDBookSidebarScrollbox extends HTMLElement {
     <hr/>
     <div class="part-title">Version</div>
     <div id="commit" class='version-commit-div'>
-        <span class='version-commit-hash'><tt>initial-26-g1532aa4</tt></span><br/>
-        <span class='version-commit-time'><tt>2025-08-03 21:47:33 +0000</tt></span>
+        <span class='version-commit-hash'><tt>initial-28-ge5df9ea</tt></span><br/>
+        <span class='version-commit-time'><tt>2025-08-03 21:56:48 +0000</tt></span>
     </div>
     <div class="part-title">Generated</div>
     <div id="generated" class='version-commit-div'>
-        <span class='version-commit-now'><tt>2025-08-03 21:48:37</tt></span>
+        <span class='version-commit-now'><tt>2025-08-03 21:57:17</tt></span>
     </div>
 <!-- End version-commit content below ToC -->
 
