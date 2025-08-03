@@ -2,7 +2,7 @@
 
 John Simpson `<jms1@jms1.net>` 2025-05-26
 
-Last updated 2025-05-26
+Last updated 2025-08-03
 
 There will be times when `mdbook` makes changes to the *original* files that this repo's `theme-template/` files were copied from. In a few cases, these changes can "break" `mdbook`, especially since the mechanism used to make the browser reload itself automatically, is implemented in Javascript.
 
@@ -73,17 +73,17 @@ In the book's `theme-template/` directory, create or update the following files,
 * `above-toc.html` - The contents of this file will be added above the ToC (Table of Contents). I use this at work to add a link back to an internal web page containing a list of "books".
 
     ```html
-
+    ↵
     <!-- Start content above ToC -->
         <a href='https://github.com/kg4zow/mdbook-template/'>Github Repo</a>
     <!-- End content above ToC -->
-
+    ↵
     ```
 
 * `below-toc.html` - The contents of this file will be added below the ToC. I use this for the commit information added by the `version-commit` script.
 
     ```html
-
+    ↵
     <!-- Start version-commit content below ToC -->
         <hr/>
         <div class="part-title">Version</div>
@@ -96,13 +96,13 @@ In the book's `theme-template/` directory, create or update the following files,
             <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
         </div>
     <!-- End version-commit content below ToC -->
-
+    ↵
     ```
 
 * `below-page.html` - The contents of this file will be added at the bottom of the content on every page.
 
     ```html
-
+    ↵
     <!-- Start version-commit content below every page -->
         <hr/>
         <div class="version-commit-div" style="float: right">
@@ -114,17 +114,27 @@ In the book's `theme-template/` directory, create or update the following files,
             <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
         </div>
     <!-- End version-commit content below every page -->
-
+    ↵
     ```
 
+> &#x2139;&#xFE0F; **Blank Lines**
+>
+> Github's markdown engine won't show blank lines at the beginning or end of a code block, but all three of the HTML fragments above should have empty lines above and below them. I'm using the "&#x21B5;" symbol to represent that blank line. If you copy/paste the blocks, be sure to remove these characters.
 
 ### Using the Script
 
 When you're about to start working on a "book", do the following:
 
-* Make sure you're using the desired version of `mdbook`.
+* Check which version of `mdbook` you're using.
 
-    *For me* this generally means the latest release. I use [Homebrew](https://brew.sh/) to install it on my workstations, so for me the process looks like this:
+    ```
+    $ mdbook --version
+    mdbook v0.4.52
+    ```
+
+* If a newer version is available, you may want to upgrade.
+
+    I like to use the [latest released version](https://github.com/rust-lang/mdBook/releases). I use [Homebrew](https://brew.sh/) to install `mdbook` on my workstations, so *for me* the upgrade process is ...
 
     * Run "`brew update`" to see if a new version of `mdbook` is available.
 
@@ -146,7 +156,7 @@ When you're about to start working on a "book", do the following:
     // mdbook-fix-templates v0.2.0 2025-05-25 - mdbook v0.4.50
     ```
 
-    If you're using the same version of `mdbook` which generated the files, you shouldn't need to update the files.
+    If you're using the same version of `mdbook` which generated the files, you shouldn't need to update the files. If not (as in the example) ...
 
 * Make sure your clone of the mdbook source code repo is up to date, and checked out to the same tag as whatever version of `mdbook` you're using.
 
@@ -159,7 +169,7 @@ When you're about to start working on a "book", do the following:
 * Make sure the book's directory is up to date with the book's git repo.
 
     ```
-    cd ~/git/kg4zow/mdbook-template/
+    cd /path/to/book/
     git fetch -p
     git checkout main
     git pull
@@ -195,5 +205,3 @@ The `mdbook-fix-templates` script was written (and then re-written) by myself, a
 The `.hbs` files in this repo's `/theme-template/` directory were copied from the `/src/theme/` directory in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/) and then modified. As such, these files are technically covered by the Mozilla Public License 2.0, [as noted in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
 
 Enjoy.
-
-*-jms1 2025-05=26*

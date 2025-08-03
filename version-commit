@@ -1,120 +1,86 @@
-#!/usr/bin/env perl
+#!/bin/bash
 #
-# version-commit
-# John Simpson <jms1@jms1.net> 2022-04-01
-# Last updated 2025-02-18
+# version-commit (as a shell script)
+# John Simpson <jms1@jms1.net> 2025-07-28
+# Last updated 2025-08-03
 #
-# This script does two things:
-#
-# - Read a JSON structure from STDIN. This will be a list with two elements.
-#   Print the contents of the second element, without any changes.
-# - Read customized theme files from 'theme-tmeplate/' and use information
-#   about the current state of the git working directory to write files in
-#   the 'theme/' directory. (This is needed for mdbook 0.4.41 and later.)
-#
-###############################################################################
-#
-# MIT License
-#
-# Copyright (c) 2022-2025 John Simpson
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-###############################################################################
-
-require 5.005 ;
-use strict ;
-use warnings ;
-
-use JSON ;
-
-my $do_debug = 0 ;
-
-###############################################################################
-#
-# Run an external command, return its output
-
-sub runit($)
-{
-    my $cmd = shift ;
-    my $rv  = '' ;
-
-    open ( R , "$cmd 2>&1 |" )
-        or die "ERROR: runit('$cmd'): $!\n" ;
-
-    while ( my $line = <R> )
-    {
-        $rv .= $line ;
-    }
-
-    close R ;
-
-    return $rv ;
-}
-
-###############################################################################
-#
-# debug function
-
-sub debug(@)
-{
-    if ( $do_debug )
-    {
-        if ( open ( DEBUG , '>>debug.txt' ) )
-        {
-            print DEBUG @_ ;
-            close DEBUG ;
-        }
-    }
-}
-
-###############################################################################
-###############################################################################
-###############################################################################
-#
-# (1) Read STDIN, decode the JSON, print just the second element.
-
-my $input = '' ;
-{ local $/ = undef ; $input = <> ; }
-
-my $j = decode_json( $input ) ;
-
-print encode_json( $j->[1] ) ;
-
-###############################################################################
-#
-# (2) Create theme/ files from theme-template/ files.
+# Filter for mdbook, inserts git commit info into page templates
 
 ########################################
-# Build the values we'll need.
+# List of tools which must be available for the script to work
 
-my $commit_hash = runit( 'git describe --always --tags --dirty' ) ;
-$commit_hash =~ s|\s+$|| ;
+TOOLS=( jq sed )
 
-my $commit_time = runit( 'TZ=UTC0 git log -1 --no-show-signature --date=iso-local --format=%cd' ) ;
-$commit_time =~ s|\s+$|| ;
+########################################
+# May need to adjust the PATH if one of the required tools (i.e. 'jq') is
+# installed in a non-standard directory.
 
-my @d = gmtime() ;
-my $now = sprintf( '%04d-%02d-%02d %02d:%02d:%02d +0000' ,
-    $d[5]+1900 , $d[4]+1 , $d[3] , $d[2] , $d[1] , $d[0] ) ;
+PATH="/usr/bin:/bin:/usr/local/bin:/opt/homebrew/bin"
 
-############################################################
+###############################################################################
+#
+# Print a debug message
+
+DO_DEBUG=true
+
+function debug {
+    if $DO_DEBUG
+    then
+        echo "$*" 1>&2
+    fi
+}
+
+###############################################################################
+###############################################################################
+###############################################################################
+#
+# Make sure the tools we need are available. If not, you should either install
+# them, or updae the PATH= line above and make sure the directories where the
+# tools are installed, are present in the PATH.
+
+FAIL=false
+for X in "${TOOLS[@]}"
+do
+    if ! type -t "$X" > /dev/null
+    then
+        echo "ERROR: '$X' is not available in your PATH, cannot continue"
+        FAIL=true
+    fi
+done
+
+if $FAIL
+then
+    exit 1
+fi
+
+###############################################################################
+#
+# Print the second element from the JSON structure, without any modifications.
+
+jq -r -M '.[1]'
+
+###############################################################################
+#
+# Build the modified theme template files
+
+########################################
+# Build the values we'll be substituting into the files
+
+VERSION_COMMIT_HASH="$( git describe --always --tags --dirty )"
+VERSION_COMMIT_TIME="$( TZ=UTC0 git log -1 --no-show-signature --date=iso-local --format=%cd )"
+VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S' )"
+
+########################################
+# Build the substitution command that 'sed' will need below
+
+SED1="s/@VERSION_COMMIT_HASH@/${VERSION_COMMIT_HASH}/"
+SED2="s/@VERSION_COMMIT_TIME@/${VERSION_COMMIT_TIME}/"
+SED3="s/@VERSION_COMMIT_NOW@/${VERSION_COMMIT_NOW}/"
+
+SED_CMD="{$SED1;$SED2;$SED3;}"
+
+###############################################################################
+#
 # Loop through 'theme-template/*.hbs' files, substituting the values above
 # wherever the substitution tags appear, and writing the results to files
 # in the 'theme/' directory with the same filenames.
@@ -139,50 +105,15 @@ my $now = sprintf( '%04d-%02d-%02d %02d:%02d:%02d +0000' ,
 # script to generate these files using the same timestamps used at the bottom
 # of each page.
 
-for my $infile ( glob 'theme-template/*.hbs' )
-{
-    my $outfile = $infile ;
-    $outfile =~ s|^theme-template/|theme/| ;
+for INFILE in theme-template/*.hbs
+do
+    OUTFILE="theme/${INFILE#theme-template/}"
 
-    ########################################
-    # Figure out if we need to rebuild this file or not.
+    if [[ ! "$INFILE" -nt "$OUTFILE" ]]
+    then
+        debug "infile '$INFILE' older than '$OUTFILE', skipping"
+        continue
+    fi
 
-    my $mtime_infile  =   (stat( $infile  ))[9]         ;
-    my $mtime_outfile = ( (stat( $outfile ))[9] || -1 ) ;
-
-    if ( $mtime_infile < $mtime_outfile )
-    {
-        debug "infile '$infile' ($mtime_infile) outfile $outfile' ($mtime_outfile) SKIP\n" ;
-
-        next ;
-    }
-    else
-    {
-        debug "infile '$infile' ($mtime_infile) outfile '$outfile' ($mtime_outfile) PROCESS\n" ;
-    }
-
-    ########################################
-    # Read the input file into memory.
-
-    my $html = '' ;
-
-    open( I , '<' , $infile )
-        or die "ERROR: cannot read '$infile': $!\n" ;
-    { local $/ = undef ; $html = <I> ; }
-    close I ;
-
-    ########################################
-    # Substitute the values into the HTML.
-
-    $html =~ s|\@VERSION_COMMIT_HASH\@|$commit_hash|gs ;
-    $html =~ s|\@VERSION_COMMIT_TIME\@|$commit_time|gs ;
-    $html =~ s|\@VERSION_COMMIT_NOW\@|$now|gs ;
-
-    ########################################
-    # Write the output file.
-
-    open ( O , '>' , $outfile )
-        or die "ERROR: cannot write '$outfile': $!\n" ;
-    print O $html ;
-    close O ;
-}
+    sed "$SED_CMD" "$INFILE" > "$OUTFILE"
+done
