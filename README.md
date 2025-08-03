@@ -552,13 +552,14 @@ The `version-commit` script uses [`jq`](https://jqlang.org/) to parse the data s
 
 * **macOS** with [Homebrew](https://brew.sh/): `brew install jq`
 
-* **Other**: available through some distributions' package reopsitories, [this page](https://jqlang.org/download/) has details
+* **Other**: available through some distributions' package reopsitories, [this page](https://jqlang.org/download/) has details.
+
+Note that if `jq` is installed in a non-standard directory, you may need to adjust the `PATH=` line near the top of the `version-commit` script to include the correct directory.
 
 
-### Perl
+### Perl (not any more)
 
-The `version-commit` script was originally written in Perl, however several people reported problems with installing the JSON module, so I re-wrote it as a shell script that uses `jq`. If you *were* using the previous verison, the new `version-commit` shell script can be copied over the previous `version-commit` shell script and, as long as `jq` is installed,
-
+The `version-commit` script was originally written in Perl. Several people reported problems with installing the JSON module, so I re-wrote it as a shell script that uses `jq`. If you have books which are currently using the Perl version, you can copy the new `version-commit` shell over it in your book's repo. As long as `jq` is installed, it should work the same.
 
 
 # License
