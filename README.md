@@ -557,7 +557,7 @@ The `version-commit` script uses [`jq`](https://jqlang.org/) to parse the data s
 
 ### Perl
 
-The `version-commit` script was originally written in Perl, however several people reported problems with installing the JSON module, so
+The `version-commit` script was originally written in Perl, however several people reported problems with installing the JSON module, so I re-wrote it as a shell script that uses `jq`. If you *were* using the previous verison, the new `version-commit` shell script can be copied over the previous `version-commit` shell script and, as long as `jq` is installed,
 
 
 
