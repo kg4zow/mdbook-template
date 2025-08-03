@@ -4,8 +4,26 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Tue, 3 Jun 2025 09:55:39 -0400</pubDate>
-    <lastBuildDate>Tue, 03 Jun 2025 13:58:10 +0000</lastBuildDate>
+    <pubDate>Sun, 3 Aug 2025 17:47:33 -0400</pubDate>
+    <lastBuildDate>Sun, 03 Aug 2025 21:48:37 +0000</lastBuildDate>
+    <item>
+      <guid>1532aa432069df56ae226cc8e8c0b935f6cda0c0</guid>
+      <pubDate>Sun, 3 Aug 2025 17:47:33 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/1532aa432069df56ae226cc8e8c0b935f6cda0c0</link>
+      <title>Changed 'version-commit' from Perl to shell, updated docs</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 1532aa432069df56ae226cc8e8c0b935f6cda0c0
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Sun, 3 Aug 2025 17:47:33 -0400
+
+Changed 'version-commit' from Perl to shell, updated docs
+
+M	README.md
+M	theme-template/README.md
+M	version-commit</pre>
+      </description>
+    </item>
     <item>
       <guid>487094696e565ce87b25c7cd52bf7a622c65ec9c</guid>
       <pubDate>Tue, 3 Jun 2025 09:55:39 -0400</pubDate>
