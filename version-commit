@@ -2,7 +2,7 @@
 #
 # version-commit (as a shell script)
 # John Simpson <jms1@jms1.net> 2025-07-28
-# Last updated 2025-08-03
+# Last updated 2025-09-16
 #
 # Filter for mdbook, inserts git commit info into page templates
 #
@@ -47,7 +47,7 @@ PATH="/usr/bin:/bin:/usr/local/bin:/opt/homebrew/bin"
 #
 # Print a debug message
 
-DO_DEBUG=true
+DO_DEBUG=false
 
 function debug {
     if $DO_DEBUG
