@@ -4,8 +4,79 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Sun, 3 Aug 2025 17:56:48 -0400</pubDate>
-    <lastBuildDate>Sun, 03 Aug 2025 21:57:17 +0000</lastBuildDate>
+    <pubDate>Wed, 10 Dec 2025 08:07:01 -0500</pubDate>
+    <lastBuildDate>Wed, 10 Dec 2025 13:07:32 +0000</lastBuildDate>
+    <item>
+      <guid>bc298eb71c765e68a01eb5a45f2890ddab0b4dcc</guid>
+      <pubDate>Wed, 10 Dec 2025 08:07:01 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/bc298eb71c765e68a01eb5a45f2890ddab0b4dcc</link>
+      <title>Minor clarification in `introduction.md`</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: bc298eb71c765e68a01eb5a45f2890ddab0b4dcc
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Wed, 10 Dec 2025 08:07:01 -0500
+
+Minor clarification in `introduction.md`
+
+M	src/introduction.md</pre>
+      </description>
+    </item>
+    <item>
+      <guid>ae49aeeb7ef7067d60c6c7e7ea912bc9e1c1fd93</guid>
+      <pubDate>Wed, 10 Dec 2025 08:06:33 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/ae49aeeb7ef7067d60c6c7e7ea912bc9e1c1fd93</link>
+      <title>Tweaking ToC/page footer format</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: ae49aeeb7ef7067d60c6c7e7ea912bc9e1c1fd93
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Wed, 10 Dec 2025 08:06:33 -0500
+
+Tweaking ToC/page footer format
+
+M	theme-template/below-page.html
+M	theme-template/below-toc.html
+M	theme-template/index.hbs
+M	theme-template/toc.html.hbs
+M	theme-template/toc.js.hbs
+M	version-commit
+M	version-commit.css</pre>
+      </description>
+    </item>
+    <item>
+      <guid>02403777de4c599152a116bca1f01a7d0b7f7399</guid>
+      <pubDate>Wed, 10 Dec 2025 08:05:46 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/02403777de4c599152a116bca1f01a7d0b7f7399</link>
+      <title>Updates to work with mdbook v0.5.0</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 02403777de4c599152a116bca1f01a7d0b7f7399
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Wed, 10 Dec 2025 08:05:46 -0500
+
+Updates to work with mdbook v0.5.0
+
+M	book.toml
+M	theme-template/mdbook-fix-templates</pre>
+      </description>
+    </item>
+    <item>
+      <guid>140cebf7f270b9d1f5afdaf1b5a238563ee873c7</guid>
+      <pubDate>Tue, 16 Sep 2025 12:42:34 -0400</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/140cebf7f270b9d1f5afdaf1b5a238563ee873c7</link>
+      <title>Disable debug messages in `version-commit` script</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 140cebf7f270b9d1f5afdaf1b5a238563ee873c7
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Tue, 16 Sep 2025 12:42:34 -0400
+
+Disable debug messages in `version-commit` script
+
+M	version-commit</pre>
+      </description>
+    </item>
     <item>
       <guid>e5df9ea0ced29946b154e78e529104225a1c13e0</guid>
       <pubDate>Sun, 3 Aug 2025 17:56:48 -0400</pubDate>
