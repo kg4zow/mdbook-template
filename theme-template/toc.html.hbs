@@ -28,10 +28,7 @@
         <link rel="stylesheet" href="{{ resource "css/print.css" }}" media="print">
         {{/if}}
         <!-- Fonts -->
-        <link rel="stylesheet" href="{{ resource "FontAwesome/css/font-awesome.css" }}">
-        {{#if copy_fonts}}
         <link rel="stylesheet" href="{{ resource "fonts/fonts.css" }}">
-        {{/if}}
         <!-- Custom theme stylesheets -->
         {{#each additional_css}}
         <link rel="stylesheet" href="{{ resource this }}">
@@ -49,11 +46,14 @@
     <hr/>
     <div class="part-title">Version</div>
     <div id="commit" class='version-commit-div'>
-        <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
-        <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+        <span class='version-commit-time'><tt>@VERSION_COMMIT_HASH@</tt></span>
+        <br/>
+        <span class='version-commit-hash'><tt>@VERSION_COMMIT_TIME@</tt></span>
     </div>
     <div class="part-title">Generated</div>
     <div id="generated" class='version-commit-div'>
+        <span class='version-commit-ver'>using <a href='https://rust-lang.github.io/mdBook/'><tt>@VERSION_COMMIT_MDBOOK@</tt></a></span>
+        <br/>
         <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
     </div>
 <!-- End version-commit content below ToC -->
@@ -61,4 +61,4 @@
 
     </body>
 </html>
-<!-- mdbook-fix-templates v0.2.0 2025-05-25 - mdbook v0.4.51 -->
+<!-- mdbook-fix-templates v0.3.0 2025-12-03 - mdbook v0.5.1 -->

@@ -2,7 +2,7 @@
 #
 # version-commit (as a shell script)
 # John Simpson <jms1@jms1.net> 2025-07-28
-# Last updated 2025-09-16
+# Last updated 2025-12-10
 #
 # Filter for mdbook, inserts git commit info into page templates
 #
@@ -94,7 +94,8 @@ jq -r -M '.[1]'
 
 VERSION_COMMIT_HASH="$( git describe --always --tags --dirty )"
 VERSION_COMMIT_TIME="$( TZ=UTC0 git log -1 --no-show-signature --date=iso-local --format=%cd )"
-VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S' )"
+VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S %z' )"
+VERSION_COMMIT_MDBOOK="$( mdbook --version )"
 
 ########################################
 # Build the substitution command that 'sed' will need below
@@ -102,8 +103,9 @@ VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S' )"
 SED1="s/@VERSION_COMMIT_HASH@/${VERSION_COMMIT_HASH}/"
 SED2="s/@VERSION_COMMIT_TIME@/${VERSION_COMMIT_TIME}/"
 SED3="s/@VERSION_COMMIT_NOW@/${VERSION_COMMIT_NOW}/"
+SED4="s/@VERSION_COMMIT_MDBOOK@/${VERSION_COMMIT_MDBOOK}/"
 
-SED_CMD="{$SED1;$SED2;$SED3;}"
+SED_CMD="{$SED1;$SED2;$SED3;$SED4;}"
 
 ###############################################################################
 #
