@@ -5,18 +5,23 @@
 [book]
 authors                 = ["John Simpson"]
 language                = "en"
-multilingual            = false
 src                     = "src"
 title                   = "Template"
 
 [output.html]
 additional-css          = [ "section-lines.css" , "version-commit.css" ]
-curly-quotes            = false
 git-repository-url      = "https://github.com/kg4zow/mdbook-template"
 no-section-label        = true
 default-theme           = "rust"
 preferred-dark-theme    = "ayu"
+smart-punctuation       = false
+hash-files              = false
+sidebar-header-nav      = false
 
 [preprocessor.version-commit]
-renderers           = [ "html" ]
-command             = "./version-commit"
+renderers               = [ "html" ]
+command                 = "./version-commit"
+
+[output.html.fold]
+enable                  = true
+level                   = 0

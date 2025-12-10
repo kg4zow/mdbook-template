@@ -2,12 +2,12 @@
 #
 # mdbook-fix-templates
 # jms1 2022-04-05
+my $VERSION = 'v0.3.0 2025-12-03' ;
 #
 # Copy or update mdbook template files for "books"
 #
-# Last update: 2025-05-25 jms1
-# - make sure mdbook source is on the correct version
-# - added license statement (preparing to release the script publicly)
+# Last update: 2025-12-03 jms1
+# - location of original files changed between mdbook v0.4.52 and v0.5.0
 #
 ###############################################################################
 #
@@ -42,9 +42,6 @@ use warnings ;
 use Cwd qw 'abs_path cwd' ;
 use Getopt::Std ;
 
-my $VERSION     = 'v0.2.0 2025-05-25' ;
-
-my @files       = qw ( index.hbs toc.html.hbs toc.js.hbs ) ;
 my $repo_def    = "$ENV{'HOME'}/git/rust-lang/mdBook" ;
 my $repo_url    = 'https://github.com/rust-lang/mdBook' ;
 
@@ -56,6 +53,21 @@ my $above_toc   = '' ;      # HTML fragment for above the ToC
 my $below_toc   = '' ;      # HTML fragment for below the ToC
 my $below_page  = '' ;      # HTML fragment for below the main page
 my $mdbook_ver  = '' ;      # mdbook version we're running
+
+########################################
+# Original files to be copied/modified from mdbook source repo
+
+my @files       = qw ( index.hbs toc.html.hbs toc.js.hbs ) ;
+
+########################################
+# Locations within the mdbook source repo to look for source files
+# - this changed between v0.4.52 and v0.5.0, need to search both locations
+
+my @src_dirs    = qw
+(
+    src/front-end/templates
+    crates/mdbook-html/front-end/templates
+) ;
 
 ###############################################################################
 #
@@ -503,24 +515,42 @@ EOF
 }
 
 ########################################
-# Make sure the source files exist
+# Locate source files within mdbook source repo
 
 $repo_dir =~ s|/$|| ;
+$src_dir  = '' ;
 
-my $fail = 0 ;
-for my $f ( @files )
+for my $d ( @src_dirs )
 {
-    print "checking    $repo_dir/src/front-end/templates/$f\n" ;
+    my $rd     = "$repo_dir/$d" ;
+    my $dir_ok = 1 ;
 
-    unless ( -f "$repo_dir/src/front-end/templates/$f" )
+    for my $f ( @files )
     {
-        $fail = 1 ;
-        redline "ERROR: '$repo_dir/src/front-end/templates/$f' does not exist" ;
+        print "checking    $rd/$f " ;
+        if ( -f "$rd/$f" )
+        {
+            print "(exists)\n" ;
+        }
+        else
+        {
+            print "(does not exist)\n" ;
+            $dir_ok = 0 ;
+            last ;
+        }
+    }
+
+    if ( $dir_ok )
+    {
+        $src_dir = $rd ;
+        last ;
     }
 }
-$fail && exit 1 ;
 
-$src_dir = "$repo_dir/src/front-end/templates" ;
+if ( $src_dir eq '' )
+{
+    fail "ERROR: unable to locate original files within $repo_dir" ;
+}
 
 ###############################################################################
 #
