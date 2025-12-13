@@ -2,11 +2,12 @@
 
 John Simpson `<jms1@jms1.net>` 2025-05-26
 
-Last updated 2025-08-03
+Last updated 2025-12-11
 
 There will be times when `mdbook` makes changes to the *original* files that this repo's `theme-template/` files were copied from. In a few cases, these changes can "break" `mdbook`, especially since the mechanism used to make the browser reload itself automatically, is implemented in Javascript.
 
 As an example, in 2024-11, `mdbook` v0.4.41 changed how the web pages are rendered. Previously, each page was in a single file and contained a copy of the ToC. Now, the ToC is stored in a separate file from the main page, and it's generated from *two* template files - one for browsers running javascript, and one for browsers *not* running javascript.
+
 
 ### Updating the Template Files By Hand
 
@@ -16,12 +17,29 @@ To update the template files by hand ...
 
 * Edit the copies. Insert the HTML fragments in the correct places.
 
-This sounds simple, but for me it became fairly tedious after doing it half a dozen times. A big part of my day job involves automating system administration tasks, so to me it seemed natural to write a script to automate it. This is why I wrote the `mdbook-fix-templates` script, and later "clean up" the script when other people started working on some of the books I write at work.
+This sounds simple, but for me it became fairly tedious after doing it half a dozen times, since it has to be done in every book, every time `mdbook` is updated.
+
+A big part of my day job involves automating system administration tasks, so to me it seemed natural to write a script to do it automatically. This is why I wrote the `mdbook-fix-templates` script.
 
 
 ## The `mdbook-fix-templates` script
 
-This script updates the `.hbs` files in the `theme-template/` directory, after `mdbook` itself is upgraded. It works by reading the original files from `mdbook`'s source code, inserting the necessary HTML fragments where needed, and writing the modified files to the current directory.
+This script updates the `.hbs` files in the `theme-template/` directory. It does the following:
+
+* Identify which version of `mdbook` is running.
+* Read the custom HTML fragment into memory.
+* For each file being customized ...
+    * Download the original from `mdbook`'s source code in Github, if it hasn't been downloaded yet. (The downloaded files are saved locally so each one only needs to be downloaded once.)
+    * Read the original file into memory.
+    * Insert the HTML fragments in the correct place.
+    * Write the modified file in the `theme-template/` directory.
+
+The script needs to be run ...
+
+* After `mdbook` itself is upgraded.
+* Whenever the HTML fragment files are updated.
+
+After running this script ... when `mdbook` converts the Markdown source files to HTML, it runs the `version-commit` script. This reads the files from `theme-template/`, substitutes the versions and timestamps in the correct places, and writes the *actual* theme files to the `theme/` directory, which is then used to build the book's HTML files. This happens *every time the book is rendered*, which may happen dozens or hundreds of times while `mdbook serve` is running.
 
 I had originally written this as a quick-and-dirty shell script, and while it did *work*, I found myself having to do a lot of manual maintenance on it. It started off as a shell script with a mix of shell variable operators, plus a few `sed` and `awk` commands, and I had to update it for almost every new `mdbook` version because it made a lot of assumptions about the structure of the source file ... and then later it needed to edit *three* files instead of just one.
 
@@ -202,6 +220,8 @@ make serve
 
 The `mdbook-fix-templates` script was written (and then re-written) by myself, and is licensed under the [MIT License](LICENSE.txt).
 
-The `.hbs` files in this repo's `/theme-template/` directory were copied from the `/src/theme/` directory in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/) and then modified. As such, these files are technically covered by the Mozilla Public License 2.0, [as noted in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
+Some files in this repo's `/theme-template/` directory may have been downloaded from [the mdbook source CODE](https://github.com/rust-lang/mdBook/blob/master/src/theme/) and then modified. As such, these files are technically covered by the Mozilla Public License 2.0, [as noted in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
 
 Enjoy.
+
+*-jms1 2025-12-12*

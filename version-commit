@@ -2,7 +2,7 @@
 #
 # version-commit (as a shell script)
 # John Simpson <jms1@jms1.net> 2025-07-28
-# Last updated 2025-12-10
+# Last updated 2025-12-12
 #
 # Filter for mdbook, inserts git commit info into page templates
 #
@@ -94,7 +94,7 @@ jq -r -M '.[1]'
 
 VERSION_COMMIT_HASH="$( git describe --always --tags --dirty )"
 VERSION_COMMIT_TIME="$( TZ=UTC0 git log -1 --no-show-signature --date=iso-local --format=%cd )"
-VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S %z' )"
+VERSION_COMMIT_NOW="$( date -u '+%Y-%m-%d %H:%M:%S +0000' )"
 VERSION_COMMIT_MDBOOK="$( mdbook --version )"
 
 ########################################
