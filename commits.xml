@@ -4,8 +4,34 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Wed, 10 Dec 2025 08:07:01 -0500</pubDate>
-    <lastBuildDate>Wed, 10 Dec 2025 13:07:32 +0000</lastBuildDate>
+    <pubDate>Fri, 12 Dec 2025 21:04:03 -0500</pubDate>
+    <lastBuildDate>Sat, 13 Dec 2025 02:19:57 +0000</lastBuildDate>
+    <item>
+      <guid>70c538d2cf983d40fb7268a024b4088dba099513</guid>
+      <pubDate>Fri, 12 Dec 2025 21:04:03 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/70c538d2cf983d40fb7268a024b4088dba099513</link>
+      <title>Updated `mdbook-fix-templates` to download originals from Github</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 70c538d2cf983d40fb7268a024b4088dba099513
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Fri, 12 Dec 2025 21:04:03 -0500
+
+Updated `mdbook-fix-templates` to download originals from Github
+
+- tweak timestamp format in `version-commit`
+- updated `README.md` files
+
+M	README.md
+M	theme-template/.gitignore
+M	theme-template/README.md
+M	theme-template/index.hbs
+M	theme-template/mdbook-fix-templates
+M	theme-template/toc.html.hbs
+M	theme-template/toc.js.hbs
+M	version-commit</pre>
+      </description>
+    </item>
     <item>
       <guid>bc298eb71c765e68a01eb5a45f2890ddab0b4dcc</guid>
       <pubDate>Wed, 10 Dec 2025 08:07:01 -0500</pubDate>
