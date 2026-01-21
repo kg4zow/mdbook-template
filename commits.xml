@@ -4,8 +4,33 @@
     <title>mdbook-template</title>
     <link>https://github.com/kg4zow/mdbook-template</link>
     <description>Template for mdbook books</description>
-    <pubDate>Fri, 12 Dec 2025 21:04:03 -0500</pubDate>
-    <lastBuildDate>Sat, 13 Dec 2025 02:19:57 +0000</lastBuildDate>
+    <pubDate>Wed, 21 Jan 2026 17:11:06 -0500</pubDate>
+    <lastBuildDate>Wed, 21 Jan 2026 22:12:53 +0000</lastBuildDate>
+    <item>
+      <guid>668db5e3ad96d165cf63bf37eba9f750cc740143</guid>
+      <pubDate>Wed, 21 Jan 2026 17:11:06 -0500</pubDate>
+      <link>https://github.com/kg4zow/mdbook-template/commit/668db5e3ad96d165cf63bf37eba9f750cc740143</link>
+      <title>Updated page footer formatting, also ...</title>
+      <author>John Simpson</author>
+      <description>
+        <pre>Commit: 668db5e3ad96d165cf63bf37eba9f750cc740143
+Author: John Simpson &amp;lt;jms1&amp;gt;
+Date: Wed, 21 Jan 2026 17:11:06 -0500
+
+Updated page footer formatting, also ...
+
+* updated `theme-template/README.md`
+* the `theme-template/*.hbs` files were generated from `mdbook` v0.5.2
+
+M	theme-template/README.md
+M	theme-template/below-page.html
+M	theme-template/below-toc.html
+M	theme-template/index.hbs
+M	theme-template/toc.html.hbs
+M	theme-template/toc.js.hbs
+M	version-commit.css</pre>
+      </description>
+    </item>
     <item>
       <guid>70c538d2cf983d40fb7268a024b4088dba099513</guid>
       <pubDate>Fri, 12 Dec 2025 21:04:03 -0500</pubDate>

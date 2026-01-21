@@ -1,7 +1,12 @@
 /* Entire div containing commit info */
 
-.version-commit-div {
+.version-commit-div-l {
     font-size   : 70% ;
+}
+
+.version-commit-div-r {
+    font-size   : 70% ;
+    text-align  : right ;
 }
 
 /* In case individual elements need to be customized */
@@ -9,11 +14,11 @@
 .version-commit-hash {
 }
 
-.xversion-commit-time {
+.version-commit-time {
 }
 
-.xversion-commit-now {
+.version-commit-now {
 }
 
-.xversion-commit-ver {
+.version-commit-ver {
 }

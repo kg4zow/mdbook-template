@@ -17,16 +17,16 @@ class MDBookSidebarScrollbox extends HTMLElement {
 <!-- Start version-commit content below ToC -->
     <hr/>
     <div class="part-title">Version</div>
-    <div id="commit" class='version-commit-div'>
-        <span class='version-commit-time'><tt>initial-33-g70c538d</tt></span>
+    <div id="commit" class='version-commit-div-l'>
+        <span class='version-commit-time'><tt>initial-34-g668db5e</tt></span>
         <br/>
-        <span class='version-commit-hash'><tt>2025-12-13 02:04:03 +0000</tt></span>
+        <span class='version-commit-hash'><tt>2026-01-21 22:11:06 +0000</tt></span>
     </div>
     <div class="part-title">Generated</div>
-    <div id="generated" class='version-commit-div'>
-        <span class='version-commit-ver'>using <a href='https://rust-lang.github.io/mdBook/'><tt>mdbook v0.5.1</tt></a></span>
+    <div id="generated" class='version-commit-div-l'>
+        <span class='version-commit-ver'>using <a href='https://rust-lang.github.io/mdBook/'><tt>mdbook v0.5.2</tt></a></span>
         <br/>
-        <span class='version-commit-now'><tt>2025-12-13 02:19:57 +0000</tt></span>
+        <span class='version-commit-now'><tt>2026-01-21 22:12:53 +0000</tt></span>
     </div>
 <!-- End version-commit content below ToC -->
 
@@ -63,14 +63,22 @@ class MDBookSidebarScrollbox extends HTMLElement {
         // Track and set sidebar scroll position
         this.addEventListener('click', e => {
             if (e.target.tagName === 'A') {
-                sessionStorage.setItem('sidebar-scroll', this.scrollTop);
+                const clientRect = e.target.getBoundingClientRect();
+                const sidebarRect = this.getBoundingClientRect();
+                sessionStorage.setItem('sidebar-scroll-offset', clientRect.top - sidebarRect.top);
             }
         }, { passive: true });
-        const sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-        sessionStorage.removeItem('sidebar-scroll');
-        if (sidebarScrollTop) {
+        const sidebarScrollOffset = sessionStorage.getItem('sidebar-scroll-offset');
+        sessionStorage.removeItem('sidebar-scroll-offset');
+        if (sidebarScrollOffset !== null) {
             // preserve sidebar scroll position when navigating via links within sidebar
-            this.scrollTop = sidebarScrollTop;
+            const activeSection = this.querySelector('.active');
+            if (activeSection) {
+                const clientRect = activeSection.getBoundingClientRect();
+                const sidebarRect = this.getBoundingClientRect();
+                const currentOffset = clientRect.top - sidebarRect.top;
+                this.scrollTop += currentOffset - parseFloat(sidebarScrollOffset);
+            }
         } else {
             // scroll sidebar to current active section when navigating via
             // 'next/previous chapter' buttons
@@ -92,4 +100,4 @@ class MDBookSidebarScrollbox extends HTMLElement {
 window.customElements.define('mdbook-sidebar-scrollbox', MDBookSidebarScrollbox);
 
 
-// mdbook-fix-templates v0.4.0 2025-12-12 - mdbook v0.5.1
+// mdbook-fix-templates v0.4.0 2025-12-12 - mdbook v0.5.2
